@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Đăng nhập Admin</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="login-body">
+  <form id="login-form" class="login-box">
+    <h1>E-Learning Admin</h1>
+    <label>Email</label>
+    <input type="email" id="email" required />
+    <label>Mật khẩu</label>
+    <input type="password" id="password" required />
+    <button type="submit">Đăng nhập</button>
+    <p id="error-msg" class="error"></p>
+  </form>
+
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = 'index.html';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        errorMsg.textContent = 'Sai email hoặc mật khẩu.';
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (!profile || profile.role !== 'admin') {
+        errorMsg.textContent = 'Tài khoản này không có quyền admin.';
+        await supabase.auth.signOut();
+        return;
+      }
+
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
