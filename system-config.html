@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Cấu hình hệ thống - E-Learning Admin</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app-nav"></div>
+  <main class="content">
+    <div class="topbar">
+      <h1>Cấu hình hệ thống</h1>
+    </div>
+
+    <div class="tabs-row" id="config-tabs">
+      <button class="tab-item active" data-tab="departments">Phòng ban</button>
+      <button class="tab-item" data-tab="positions">Chức danh</button>
+      <button class="tab-item" data-tab="general">Cấu hình chung</button>
+    </div>
+
+    <!-- Tab: Phòng ban -->
+    <div class="tab-panel" data-tab-panel="departments">
+      <div class="topbar">
+        <div></div>
+        <button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button>
+      </div>
+      <table>
+        <thead><tr><th>Tên phòng ban</th><th style="width:160px;">Hành động</th></tr></thead>
+        <tbody id="dep-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Tab: Chức danh -->
+    <div class="tab-panel hidden" data-tab-panel="positions">
+      <div class="topbar">
+        <div></div>
+        <button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button>
+      </div>
+      <table>
+        <thead><tr><th>Tên chức danh</th><th style="width:160px;">Hành động</th></tr></thead>
+        <tbody id="pos-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Tab: Cấu hình chung -->
+    <div class="tab-panel hidden" data-tab-panel="general">
+      <div class="card" style="max-width:420px;">
+        <form id="general-form">
+          <label>Số điện thoại quản trị viên (hiện trong app cho học viên liên hệ)</label>
+          <input id="hotline-input" type="tel" placeholder="0901234567" />
+          <p class="hint">Học viên sẽ thấy số này ở mục "Liên hệ quản trị viên" trên app.</p>
+          <div class="modal-actions" style="justify-content:flex-start; margin-top:16px;">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+          </div>
+          <p id="general-msg" class="hint"></p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Phòng ban -->
+  <div id="dep-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="dep-modal-title">Thêm phòng ban</h2>
+      <form id="dep-form">
+        <label>Tên phòng ban</label>
+        <input id="dep-name-input" type="text" required />
+        <div class="modal-actions">
+          <button type="button" id="dep-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Chức danh -->
+  <div id="pos-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="pos-modal-title">Thêm chức danh</h2>
+      <form id="pos-form">
+        <label>Tên chức danh</label>
+        <input id="pos-name-input" type="text" required />
+        <div class="modal-actions">
+          <button type="button" id="pos-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin } from './js/auth.js';
+    import { initSimpleCrud } from './js/simpleCrud.js';
+    import { initTabs } from './js/tabs.js';
+    import { supabase } from './js/supabaseClient.js';
+
+    await requireAdmin('system-config');
+    initTabs('#config-tabs');
+
+    initSimpleCrud({
+      tableName: 'departments',
+      singularLabel: 'Phòng ban',
+      ids: {
+        tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal',
+        modalTitleId: 'dep-modal-title', formId: 'dep-form',
+        nameInputId: 'dep-name-input', cancelBtnId: 'dep-cancel-btn',
+      },
+    });
+
+    initSimpleCrud({
+      tableName: 'positions',
+      singularLabel: 'Chức danh',
+      ids: {
+        tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal',
+        modalTitleId: 'pos-modal-title', formId: 'pos-form',
+        nameInputId: 'pos-name-input', cancelBtnId: 'pos-cancel-btn',
+      },
+    });
+
+    // Cấu hình chung: admin_hotline
+    const hotlineInput = document.getElementById('hotline-input');
+    const generalMsg = document.getElementById('general-msg');
+
+    const { data: setting } = await supabase
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'admin_hotline')
+      .maybeSingle();
+    hotlineInput.value = setting?.value || '';
+
+    document.getElementById('general-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      generalMsg.textContent = 'Đang lưu...';
+      const { error } = await supabase
+        .from('app_settings')
+        .upsert({ key: 'admin_hotline', value: hotlineInput.value.trim() }, { onConflict: 'key' });
+      generalMsg.textContent = error ? `Lỗi: ${error.message}` : 'Đã lưu.';
+    });
+  </script>
+</body>
+</html>

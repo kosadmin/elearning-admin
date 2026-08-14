@@ -1,16 +1,23 @@
 import { supabase } from './supabaseClient.js';
-import { requireAdmin } from './auth.js';
 
-export async function initSimpleCrud({ tableName, pageKey, singularLabel }) {
-  await requireAdmin(pageKey);
+export async function initSimpleCrud({ tableName, singularLabel, ids }) {
+  const {
+    tbodyId = 'data-body',
+    addBtnId = 'add-btn',
+    modalId = 'modal',
+    modalTitleId = 'modal-title',
+    formId = 'item-form',
+    nameInputId = 'name-input',
+    cancelBtnId = 'cancel-btn',
+  } = ids || {};
 
-  const tbody = document.getElementById('data-body');
-  const addBtn = document.getElementById('add-btn');
-  const modal = document.getElementById('modal');
-  const modalTitle = document.getElementById('modal-title');
-  const form = document.getElementById('item-form');
-  const nameInput = document.getElementById('name-input');
-  const cancelBtn = document.getElementById('cancel-btn');
+  const tbody = document.getElementById(tbodyId);
+  const addBtn = document.getElementById(addBtnId);
+  const modal = document.getElementById(modalId);
+  const modalTitle = document.getElementById(modalTitleId);
+  const form = document.getElementById(formId);
+  const nameInput = document.getElementById(nameInputId);
+  const cancelBtn = document.getElementById(cancelBtnId);
 
   let editingId = null;
 
