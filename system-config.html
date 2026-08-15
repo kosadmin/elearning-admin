@@ -39,6 +39,7 @@
 
     <div class="main-area">
       <header class="topbar-fixed">
+        <h2 class="topbar-title">Cấu hình hệ thống</h2>
         <div class="topbar-user">
           <div class="avatar-circle" id="topbar-avatar">A</div>
           <div>
@@ -49,7 +50,6 @@
       </header>
 
       <main class="content">
-        <div class="page-header"><h1>Cấu hình hệ thống</h1></div>
 
         <div class="tabs-row" id="config-tabs">
           <button class="tab-item active" data-tab="departments">Phòng ban</button>
@@ -65,8 +65,11 @@
               <span class="card-title" style="margin:0;">Danh sách phòng ban</span>
               <button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button>
             </div>
-            <table>
-              <thead><tr><th>Tên phòng ban</th><th>Mô tả</th><th style="width:110px;">Trạng thái</th><th style="width:110px;">Thao tác</th></tr></thead>
+            <table class="table-fixed">
+              <colgroup>
+                <col style="width:22%"><col style="width:43%"><col style="width:15%"><col style="width:20%">
+              </colgroup>
+              <thead><tr><th>Tên phòng ban</th><th>Mô tả</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
               <tbody id="dep-body"></tbody>
             </table>
           </div>
@@ -79,8 +82,11 @@
               <span class="card-title" style="margin:0;">Danh sách chức danh</span>
               <button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button>
             </div>
-            <table>
-              <thead><tr><th>Tên chức danh</th><th>Mô tả</th><th style="width:110px;">Trạng thái</th><th style="width:110px;">Thao tác</th></tr></thead>
+            <table class="table-fixed">
+              <colgroup>
+                <col style="width:22%"><col style="width:43%"><col style="width:15%"><col style="width:20%">
+              </colgroup>
+              <thead><tr><th>Tên chức danh</th><th>Mô tả</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
               <tbody id="pos-body"></tbody>
             </table>
           </div>
@@ -108,9 +114,8 @@
         <div class="tab-panel hidden" data-tab-panel="general">
           <div class="card" style="max-width:420px;">
             <p class="card-title">Số điện thoại quản trị viên</p>
-            <form id="general-form">
-              <label class="field-label">Số điện thoại</label>
-              <input id="hotline-input" class="field-input" type="tel" placeholder="0901 234 567" />
+<form id="general-form">
+  <input id="hotline-input" class="field-input" type="tel" placeholder="0901 234 567" style="margin-top:4px;" />
               <p class="field-hint">Học viên sẽ thấy số này ở mục "Liên hệ quản trị viên" trên app.</p>
               <div class="modal-actions" style="justify-content:flex-start; margin-top:18px;">
                 <button type="submit" class="btn btn-primary">Lưu thay đổi</button>

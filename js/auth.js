@@ -1,6 +1,11 @@
 import { supabase } from './supabaseClient.js';
 
 export async function requireAdmin() {
+  // Vẽ ngay từ cache trước (nếu có) để tránh giật khi chuyển trang
+  const cachedName = sessionStorage.getItem('admin_full_name');
+  if (cachedName) fillTopbarUser(cachedName);
+  highlightActiveNav();
+
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     window.location.href = 'login.html';
@@ -15,11 +20,12 @@ export async function requireAdmin() {
 
   if (error || !profile || profile.role !== 'admin') {
     await supabase.auth.signOut();
+    sessionStorage.removeItem('admin_full_name');
     window.location.href = 'login.html';
     return null;
   }
 
-  highlightActiveNav();
+  sessionStorage.setItem('admin_full_name', profile.full_name || 'Admin');
   fillTopbarUser(profile.full_name);
   wireLogout();
 
@@ -44,6 +50,7 @@ function wireLogout() {
   const btn = document.getElementById('logout-btn');
   if (!btn) return;
   btn.addEventListener('click', async () => {
+    sessionStorage.removeItem('admin_full_name');
     await supabase.auth.signOut();
     window.location.href = 'login.html';
   });

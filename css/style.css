@@ -60,9 +60,10 @@ body {
 
 .main-area { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .topbar-fixed {
-  flex-shrink: 0; height: 60px; display: flex; align-items: center; justify-content: flex-end;
+  flex-shrink: 0; height: 60px; display: flex; align-items: center; justify-content: space-between;
   padding: 0 32px; border-bottom: 1px solid var(--border); background: var(--bg);
 }
+.topbar-title { margin: 0; font-size: 16px; font-weight: 800; }
 .topbar-user { display: flex; align-items: center; gap: 10px; }
 .avatar-circle { width: 36px; height: 36px; border-radius: 18px; background: var(--primary-soft); color: var(--primary-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 .topbar-user-name { font-size: 13px; font-weight: 700; }
@@ -100,7 +101,8 @@ body {
 .table-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
 .table-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; }
 table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 13px 22px; border-top: 1px solid var(--border); font-size: 13.5px; }
+th, td { text-align: left; padding: 13px 22px; border-top: 1px solid var(--border); font-size: 13.5px; word-wrap: break-word; overflow-wrap: break-word; }
+.table-fixed { table-layout: fixed; }
 th { color: var(--text-muted); font-weight: 600; font-size: 12px; background: var(--surface); }
 .empty-row td { text-align: center; color: var(--text-muted); padding: 32px; }
 
