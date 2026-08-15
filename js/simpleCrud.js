@@ -1,14 +1,13 @@
 import { supabase } from './supabaseClient.js';
 
+const ICON_EDIT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+
 export async function initSimpleCrud({ tableName, singularLabel, ids }) {
   const {
-    tbodyId = 'data-body',
-    addBtnId = 'add-btn',
-    modalId = 'modal',
-    modalTitleId = 'modal-title',
-    formId = 'item-form',
-    nameInputId = 'name-input',
-    cancelBtnId = 'cancel-btn',
+    tbodyId = 'data-body', addBtnId = 'add-btn', modalId = 'modal',
+    modalTitleId = 'modal-title', formId = 'item-form',
+    nameInputId = 'name-input', cancelBtnId = 'cancel-btn',
   } = ids || {};
 
   const tbody = document.getElementById(tbodyId);
@@ -37,8 +36,8 @@ export async function initSimpleCrud({ tableName, singularLabel, ids }) {
       tr.innerHTML = `
         <td>${escapeHtml(row.name)}</td>
         <td>
-          <button class="btn btn-secondary btn-sm" data-edit="${row.id}">Sửa</button>
-          <button class="btn btn-danger btn-sm" data-delete="${row.id}">Xoá</button>
+          <button class="icon-btn edit" data-edit="${row.id}" title="Sửa">${ICON_EDIT}</button>
+          <button class="icon-btn delete" data-delete="${row.id}" title="Xoá">${ICON_TRASH}</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -52,25 +51,21 @@ export async function initSimpleCrud({ tableName, singularLabel, ids }) {
     modal.classList.add('open');
     nameInput.focus();
   }
-
-  function closeModal() {
-    modal.classList.remove('open');
-    form.reset();
-    editingId = null;
-  }
+  function closeModal() { modal.classList.remove('open'); form.reset(); editingId = null; }
 
   addBtn.addEventListener('click', () => openModal('add', null));
   cancelBtn.addEventListener('click', closeModal);
 
   tbody.addEventListener('click', async (e) => {
-    const editId = e.target.dataset.edit;
-    const deleteId = e.target.dataset.delete;
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const editId = btn.dataset.edit;
+    const deleteId = btn.dataset.delete;
 
     if (editId) {
       const { data } = await supabase.from(tableName).select('id, name').eq('id', editId).single();
       openModal('edit', data);
     }
-
     if (deleteId) {
       if (!confirm(`Xoá ${singularLabel.toLowerCase()} này? Hành động không thể hoàn tác.`)) return;
       const { error } = await supabase.from(tableName).delete().eq('id', deleteId);
@@ -89,18 +84,10 @@ export async function initSimpleCrud({ tableName, singularLabel, ids }) {
     e.preventDefault();
     const name = nameInput.value.trim();
     if (!name) return;
-
     let error;
-    if (editingId) {
-      ({ error } = await supabase.from(tableName).update({ name }).eq('id', editingId));
-    } else {
-      ({ error } = await supabase.from(tableName).insert({ name }));
-    }
-
-    if (error) {
-      alert(`Lỗi lưu: ${error.message}`);
-      return;
-    }
+    if (editingId) ({ error } = await supabase.from(tableName).update({ name }).eq('id', editingId));
+    else ({ error } = await supabase.from(tableName).insert({ name }));
+    if (error) { alert(`Lỗi lưu: ${error.message}`); return; }
     closeModal();
     load();
   });

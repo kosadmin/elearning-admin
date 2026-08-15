@@ -6,75 +6,128 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="app-nav"></div>
-  <main class="content">
-    <div class="topbar"><h1>Cấu hình hệ thống</h1></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-title">🎓 E-Learning Admin</div>
+      <ul>
+        <li><a href="index.html" data-page="index.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V12h6v9"/><path d="M5 10v11h14V10"/></svg>
+          Trang chủ
+        </a></li>
+        <li><a href="system-config.html" data-page="system-config.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15 1.65 1.65 0 0 0 3 14H2.91a2 2 0 0 1 0-4H3a1.65 1.65 0 0 0 1.65-1H4.68A1.65 1.65 0 0 0 4.35 6.18l-.06-.06A2 2 0 1 1 7.12 3.3l.06.06A1.65 1.65 0 0 0 9 3.68 1.65 1.65 0 0 0 10 2h.09a2 2 0 0 1 4 0V2c0 .61.36 1.16.94 1.4a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.24.58.79.94 1.4.94H21a2 2 0 0 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"/></svg>
+          Cấu hình hệ thống
+        </a></li>
+        <li><a href="students.html" data-page="students.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Quản trị người dùng
+        </a></li>
+        <li><a href="courses.html" data-page="courses.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Khoá học
+        </a></li>
+        <li><a href="quizzes.html" data-page="quizzes.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+          Kiểm tra & Bài thi
+        </a></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Đăng xuất
+      </button>
+    </aside>
 
-    <div class="tabs-row" id="config-tabs">
-      <button class="tab-item active" data-tab="departments">Phòng ban</button>
-      <button class="tab-item" data-tab="positions">Chức danh</button>
-      <button class="tab-item" data-tab="roles">Vai trò người dùng</button>
-      <button class="tab-item" data-tab="banner">Banner chào mừng</button>
-      <button class="tab-item" data-tab="general">Thông tin quản trị</button>
-    </div>
-
-    <!-- Phòng ban -->
-    <div class="tab-panel" data-tab-panel="departments">
-      <div class="topbar"><div></div><button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button></div>
-      <table>
-        <thead><tr><th>Tên phòng ban</th><th style="width:160px;">Hành động</th></tr></thead>
-        <tbody id="dep-body"></tbody>
-      </table>
-    </div>
-
-    <!-- Chức danh -->
-    <div class="tab-panel hidden" data-tab-panel="positions">
-      <div class="topbar"><div></div><button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button></div>
-      <table>
-        <thead><tr><th>Tên chức danh</th><th style="width:160px;">Hành động</th></tr></thead>
-        <tbody id="pos-body"></tbody>
-      </table>
-    </div>
-
-    <!-- Vai trò người dùng -->
-    <div class="tab-panel hidden" data-tab-panel="roles">
-      <div class="topbar"><div></div><button id="role-add-btn" class="btn btn-primary">+ Thêm vai trò</button></div>
-      <table>
-        <thead><tr><th>Tên vai trò</th><th style="width:160px;">Hành động</th></tr></thead>
-        <tbody id="role-body"></tbody>
-      </table>
-    </div>
-
-    <!-- Banner chào mừng (placeholder, làm chi tiết ở phase sau) -->
-    <div class="tab-panel hidden" data-tab-panel="banner">
-      <div class="card">
-        <p class="hint">Quản lý banner (upload ảnh, gắn link/điều hướng) sẽ làm chi tiết ở giai đoạn sau khi tới phần Storage/upload file.</p>
-      </div>
-    </div>
-
-    <!-- Thông tin quản trị -->
-    <div class="tab-panel hidden" data-tab-panel="general">
-      <div class="card" style="max-width:420px;">
-        <form id="general-form">
-          <label>Số điện thoại quản trị viên</label>
-          <input id="hotline-input" type="tel" placeholder="0901234567" />
-          <p class="hint">Học viên sẽ thấy số này ở mục "Liên hệ quản trị viên" trên app.</p>
-          <div class="modal-actions" style="justify-content:flex-start; margin-top:16px;">
-            <button type="submit" class="btn btn-primary">Lưu</button>
+    <div class="main-area">
+      <header class="topbar-fixed">
+        <div class="topbar-user">
+          <div class="avatar-circle" id="topbar-avatar">A</div>
+          <div>
+            <div class="topbar-user-name" id="topbar-user-name">—</div>
+            <div class="topbar-user-role">Quản trị viên</div>
           </div>
-          <p id="general-msg" class="hint"></p>
-        </form>
-      </div>
-    </div>
-  </main>
+        </div>
+      </header>
 
-  <!-- Modal Phòng ban -->
+      <main class="content">
+        <div class="page-header"><h1>Cấu hình hệ thống</h1></div>
+
+        <div class="tabs-row" id="config-tabs">
+          <button class="tab-item active" data-tab="departments">Phòng ban</button>
+          <button class="tab-item" data-tab="positions">Chức danh</button>
+          <button class="tab-item" data-tab="roles">Vai trò người dùng</button>
+          <button class="tab-item" data-tab="banner">Banner chào mừng</button>
+          <button class="tab-item" data-tab="general">Thông tin quản trị</button>
+        </div>
+
+        <div class="tab-panel" data-tab-panel="departments">
+          <div class="table-wrap">
+            <div class="table-header">
+              <span class="card-title" style="margin:0;">Danh sách phòng ban</span>
+              <button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button>
+            </div>
+            <table>
+              <thead><tr><th>Tên phòng ban</th><th style="width:120px;">Thao tác</th></tr></thead>
+              <tbody id="dep-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel hidden" data-tab-panel="positions">
+          <div class="table-wrap">
+            <div class="table-header">
+              <span class="card-title" style="margin:0;">Danh sách chức danh</span>
+              <button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button>
+            </div>
+            <table>
+              <thead><tr><th>Tên chức danh</th><th style="width:120px;">Thao tác</th></tr></thead>
+              <tbody id="pos-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel hidden" data-tab-panel="roles">
+          <div class="table-wrap">
+            <div class="table-header">
+              <span class="card-title" style="margin:0;">Danh sách vai trò</span>
+              <button id="role-add-btn" class="btn btn-primary">+ Thêm vai trò</button>
+            </div>
+            <table>
+              <thead><tr><th>Tên vai trò</th><th style="width:120px;">Thao tác</th></tr></thead>
+              <tbody id="role-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel hidden" data-tab-panel="banner">
+          <div class="card">
+            <p class="field-hint">Quản lý banner (upload ảnh, gắn link/điều hướng) sẽ làm chi tiết ở giai đoạn sau khi tới phần Storage/upload file.</p>
+          </div>
+        </div>
+
+        <div class="tab-panel hidden" data-tab-panel="general">
+          <div class="card" style="max-width:420px;">
+            <p class="card-title">Số điện thoại quản trị viên</p>
+            <form id="general-form">
+              <label class="field-label">Số điện thoại</label>
+              <input id="hotline-input" class="field-input" type="tel" placeholder="0901 234 567" />
+              <p class="field-hint">Học viên sẽ thấy số này ở mục "Liên hệ quản trị viên" trên app.</p>
+              <div class="modal-actions" style="justify-content:flex-start; margin-top:18px;">
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+              </div>
+              <p id="general-msg" class="field-hint"></p>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
   <div id="dep-modal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="dep-modal-title">Thêm phòng ban</h2>
       <form id="dep-form">
-        <label>Tên phòng ban</label>
-        <input id="dep-name-input" type="text" required />
+        <label class="field-label">Tên phòng ban</label>
+        <input id="dep-name-input" class="field-input" type="text" required />
         <div class="modal-actions">
           <button type="button" id="dep-cancel-btn" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Lưu</button>
@@ -83,13 +136,12 @@
     </div>
   </div>
 
-  <!-- Modal Chức danh -->
   <div id="pos-modal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="pos-modal-title">Thêm chức danh</h2>
       <form id="pos-form">
-        <label>Tên chức danh</label>
-        <input id="pos-name-input" type="text" required />
+        <label class="field-label">Tên chức danh</label>
+        <input id="pos-name-input" class="field-input" type="text" required />
         <div class="modal-actions">
           <button type="button" id="pos-cancel-btn" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Lưu</button>
@@ -98,13 +150,12 @@
     </div>
   </div>
 
-  <!-- Modal Vai trò -->
   <div id="role-modal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="role-modal-title">Thêm vai trò</h2>
       <form id="role-form">
-        <label>Tên vai trò</label>
-        <input id="role-name-input" type="text" required placeholder="VD: Nhân viên, CTV, Quản lý..." />
+        <label class="field-label">Tên vai trò</label>
+        <input id="role-name-input" class="field-input" type="text" required placeholder="VD: Nhân viên, CTV, Quản lý..." />
         <div class="modal-actions">
           <button type="button" id="role-cancel-btn" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Lưu</button>
@@ -119,19 +170,17 @@
     import { initTabs } from './js/tabs.js';
     import { supabase } from './js/supabaseClient.js';
 
-    await requireAdmin('system-config');
+    await requireAdmin();
     initTabs('#config-tabs');
 
     initSimpleCrud({
       tableName: 'departments', singularLabel: 'Phòng ban',
       ids: { tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal', modalTitleId: 'dep-modal-title', formId: 'dep-form', nameInputId: 'dep-name-input', cancelBtnId: 'dep-cancel-btn' },
     });
-
     initSimpleCrud({
       tableName: 'positions', singularLabel: 'Chức danh',
       ids: { tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal', modalTitleId: 'pos-modal-title', formId: 'pos-form', nameInputId: 'pos-name-input', cancelBtnId: 'pos-cancel-btn' },
     });
-
     initSimpleCrud({
       tableName: 'user_roles', singularLabel: 'Vai trò',
       ids: { tbodyId: 'role-body', addBtnId: 'role-add-btn', modalId: 'role-modal', modalTitleId: 'role-modal-title', formId: 'role-form', nameInputId: 'role-name-input', cancelBtnId: 'role-cancel-btn' },

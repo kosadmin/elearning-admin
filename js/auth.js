@@ -1,14 +1,6 @@
 import { supabase } from './supabaseClient.js';
 
-const NAV_ITEMS = [
-  { href: 'index.html', label: '🏠 Trang chủ', key: 'dashboard' },
-  { href: 'system-config.html', label: '⚙️ Cấu hình hệ thống', key: 'system-config' },
-  { href: 'students.html', label: '👥 Quản trị người dùng', key: 'students' },
-  { href: 'courses.html', label: '📘 Khoá học', key: 'courses' },
-  { href: 'quizzes.html', label: '📝 Kiểm tra & Bài thi', key: 'quizzes' },
-];
-
-export async function requireAdmin(activeKey) {
+export async function requireAdmin() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     window.location.href = 'login.html';
@@ -27,27 +19,31 @@ export async function requireAdmin(activeKey) {
     return null;
   }
 
-  renderNav(activeKey, profile.full_name);
+  highlightActiveNav();
+  fillTopbarUser(profile.full_name);
+  wireLogout();
+
   return profile;
 }
 
-function renderNav(activeKey, fullName) {
-  const nav = document.getElementById('app-nav');
-  if (!nav) return;
+function highlightActiveNav() {
+  const currentPage = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar a[data-page]').forEach(a => {
+    if (a.dataset.page === currentPage) a.classList.add('active');
+  });
+}
 
-  nav.innerHTML = `
-    <div class="sidebar">
-      <div class="sidebar-title">🎓 E-Learning Admin</div>
-      <div class="sidebar-user">${fullName || ''}</div>
-      <ul>
-        ${NAV_ITEMS.map(item => `
-          <li><a href="${item.href}" class="${item.key === activeKey ? 'active' : ''}">${item.label}</a></li>
-        `).join('')}
-      </ul>
-      <button id="logout-btn">Đăng xuất</button>
-    </div>
-  `;
-  document.getElementById('logout-btn').addEventListener('click', async () => {
+function fillTopbarUser(fullName) {
+  const nameEl = document.getElementById('topbar-user-name');
+  const avatarEl = document.getElementById('topbar-avatar');
+  if (nameEl) nameEl.textContent = fullName || 'Admin';
+  if (avatarEl) avatarEl.textContent = (fullName || 'A').trim().charAt(0).toUpperCase();
+}
+
+function wireLogout() {
+  const btn = document.getElementById('logout-btn');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
     await supabase.auth.signOut();
     window.location.href = 'login.html';
   });
