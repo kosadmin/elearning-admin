@@ -66,11 +66,12 @@
               <button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button>
             </div>
             <table>
-              <thead><tr><th>Tên phòng ban</th><th style="width:120px;">Thao tác</th></tr></thead>
+              <thead><tr><th>Tên phòng ban</th><th>Mô tả</th><th style="width:110px;">Trạng thái</th><th style="width:110px;">Thao tác</th></tr></thead>
               <tbody id="dep-body"></tbody>
             </table>
           </div>
         </div>
+
 
         <div class="tab-panel hidden" data-tab-panel="positions">
           <div class="table-wrap">
@@ -79,7 +80,7 @@
               <button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button>
             </div>
             <table>
-              <thead><tr><th>Tên chức danh</th><th style="width:120px;">Thao tác</th></tr></thead>
+              <thead><tr><th>Tên chức danh</th><th>Mô tả</th><th style="width:110px;">Trạng thái</th><th style="width:110px;">Thao tác</th></tr></thead>
               <tbody id="pos-body"></tbody>
             </table>
           </div>
@@ -128,6 +129,12 @@
       <form id="dep-form">
         <label class="field-label">Tên phòng ban</label>
         <input id="dep-name-input" class="field-input" type="text" required />
+        <label class="field-label">Mô tả</label>
+        <textarea id="dep-desc-input" class="field-input" rows="2"></textarea>
+        <div class="switch-row">
+          <label class="switch"><input type="checkbox" id="dep-status-input" checked /><span class="slider"></span></label>
+          <span>Đang hoạt động</span>
+        </div>
         <div class="modal-actions">
           <button type="button" id="dep-cancel-btn" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Lưu</button>
@@ -142,6 +149,12 @@
       <form id="pos-form">
         <label class="field-label">Tên chức danh</label>
         <input id="pos-name-input" class="field-input" type="text" required />
+        <label class="field-label">Mô tả</label>
+        <textarea id="pos-desc-input" class="field-input" rows="2"></textarea>
+        <div class="switch-row">
+          <label class="switch"><input type="checkbox" id="pos-status-input" checked /><span class="slider"></span></label>
+          <span>Đang hoạt động</span>
+        </div>
         <div class="modal-actions">
           <button type="button" id="pos-cancel-btn" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Lưu</button>
@@ -167,20 +180,23 @@
   <script type="module">
     import { requireAdmin } from './js/auth.js';
     import { initSimpleCrud } from './js/simpleCrud.js';
+    import { initCrudWithStatus } from './js/crudWithStatus.js';
     import { initTabs } from './js/tabs.js';
     import { supabase } from './js/supabaseClient.js';
 
     await requireAdmin();
     initTabs('#config-tabs');
 
-    initSimpleCrud({
+    initCrudWithStatus({
       tableName: 'departments', singularLabel: 'Phòng ban',
-      ids: { tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal', modalTitleId: 'dep-modal-title', formId: 'dep-form', nameInputId: 'dep-name-input', cancelBtnId: 'dep-cancel-btn' },
+      ids: { tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal', modalTitleId: 'dep-modal-title', formId: 'dep-form', nameInputId: 'dep-name-input', descInputId: 'dep-desc-input', statusInputId: 'dep-status-input', cancelBtnId: 'dep-cancel-btn' },
     });
-    initSimpleCrud({
+
+    initCrudWithStatus({
       tableName: 'positions', singularLabel: 'Chức danh',
-      ids: { tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal', modalTitleId: 'pos-modal-title', formId: 'pos-form', nameInputId: 'pos-name-input', cancelBtnId: 'pos-cancel-btn' },
+      ids: { tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal', modalTitleId: 'pos-modal-title', formId: 'pos-form', nameInputId: 'pos-name-input', descInputId: 'pos-desc-input', statusInputId: 'pos-status-input', cancelBtnId: 'pos-cancel-btn' },
     });
+
     initSimpleCrud({
       tableName: 'user_roles', singularLabel: 'Vai trò',
       ids: { tbodyId: 'role-body', addBtnId: 'role-add-btn', modalId: 'role-modal', modalTitleId: 'role-modal-title', formId: 'role-form', nameInputId: 'role-name-input', cancelBtnId: 'role-cancel-btn' },
