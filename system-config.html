@@ -8,45 +8,55 @@
 <body>
   <div id="app-nav"></div>
   <main class="content">
-    <div class="topbar">
-      <h1>Cấu hình hệ thống</h1>
-    </div>
+    <div class="topbar"><h1>Cấu hình hệ thống</h1></div>
 
     <div class="tabs-row" id="config-tabs">
       <button class="tab-item active" data-tab="departments">Phòng ban</button>
       <button class="tab-item" data-tab="positions">Chức danh</button>
-      <button class="tab-item" data-tab="general">Cấu hình chung</button>
+      <button class="tab-item" data-tab="roles">Vai trò người dùng</button>
+      <button class="tab-item" data-tab="banner">Banner chào mừng</button>
+      <button class="tab-item" data-tab="general">Thông tin quản trị</button>
     </div>
 
-    <!-- Tab: Phòng ban -->
+    <!-- Phòng ban -->
     <div class="tab-panel" data-tab-panel="departments">
-      <div class="topbar">
-        <div></div>
-        <button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button>
-      </div>
+      <div class="topbar"><div></div><button id="dep-add-btn" class="btn btn-primary">+ Thêm phòng ban</button></div>
       <table>
         <thead><tr><th>Tên phòng ban</th><th style="width:160px;">Hành động</th></tr></thead>
         <tbody id="dep-body"></tbody>
       </table>
     </div>
 
-    <!-- Tab: Chức danh -->
+    <!-- Chức danh -->
     <div class="tab-panel hidden" data-tab-panel="positions">
-      <div class="topbar">
-        <div></div>
-        <button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button>
-      </div>
+      <div class="topbar"><div></div><button id="pos-add-btn" class="btn btn-primary">+ Thêm chức danh</button></div>
       <table>
         <thead><tr><th>Tên chức danh</th><th style="width:160px;">Hành động</th></tr></thead>
         <tbody id="pos-body"></tbody>
       </table>
     </div>
 
-    <!-- Tab: Cấu hình chung -->
+    <!-- Vai trò người dùng -->
+    <div class="tab-panel hidden" data-tab-panel="roles">
+      <div class="topbar"><div></div><button id="role-add-btn" class="btn btn-primary">+ Thêm vai trò</button></div>
+      <table>
+        <thead><tr><th>Tên vai trò</th><th style="width:160px;">Hành động</th></tr></thead>
+        <tbody id="role-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Banner chào mừng (placeholder, làm chi tiết ở phase sau) -->
+    <div class="tab-panel hidden" data-tab-panel="banner">
+      <div class="card">
+        <p class="hint">Quản lý banner (upload ảnh, gắn link/điều hướng) sẽ làm chi tiết ở giai đoạn sau khi tới phần Storage/upload file.</p>
+      </div>
+    </div>
+
+    <!-- Thông tin quản trị -->
     <div class="tab-panel hidden" data-tab-panel="general">
       <div class="card" style="max-width:420px;">
         <form id="general-form">
-          <label>Số điện thoại quản trị viên (hiện trong app cho học viên liên hệ)</label>
+          <label>Số điện thoại quản trị viên</label>
           <input id="hotline-input" type="tel" placeholder="0901234567" />
           <p class="hint">Học viên sẽ thấy số này ở mục "Liên hệ quản trị viên" trên app.</p>
           <div class="modal-actions" style="justify-content:flex-start; margin-top:16px;">
@@ -88,6 +98,21 @@
     </div>
   </div>
 
+  <!-- Modal Vai trò -->
+  <div id="role-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="role-modal-title">Thêm vai trò</h2>
+      <form id="role-form">
+        <label>Tên vai trò</label>
+        <input id="role-name-input" type="text" required placeholder="VD: Nhân viên, CTV, Quản lý..." />
+        <div class="modal-actions">
+          <button type="button" id="role-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { requireAdmin } from './js/auth.js';
     import { initSimpleCrud } from './js/simpleCrud.js';
@@ -98,42 +123,29 @@
     initTabs('#config-tabs');
 
     initSimpleCrud({
-      tableName: 'departments',
-      singularLabel: 'Phòng ban',
-      ids: {
-        tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal',
-        modalTitleId: 'dep-modal-title', formId: 'dep-form',
-        nameInputId: 'dep-name-input', cancelBtnId: 'dep-cancel-btn',
-      },
+      tableName: 'departments', singularLabel: 'Phòng ban',
+      ids: { tbodyId: 'dep-body', addBtnId: 'dep-add-btn', modalId: 'dep-modal', modalTitleId: 'dep-modal-title', formId: 'dep-form', nameInputId: 'dep-name-input', cancelBtnId: 'dep-cancel-btn' },
     });
 
     initSimpleCrud({
-      tableName: 'positions',
-      singularLabel: 'Chức danh',
-      ids: {
-        tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal',
-        modalTitleId: 'pos-modal-title', formId: 'pos-form',
-        nameInputId: 'pos-name-input', cancelBtnId: 'pos-cancel-btn',
-      },
+      tableName: 'positions', singularLabel: 'Chức danh',
+      ids: { tbodyId: 'pos-body', addBtnId: 'pos-add-btn', modalId: 'pos-modal', modalTitleId: 'pos-modal-title', formId: 'pos-form', nameInputId: 'pos-name-input', cancelBtnId: 'pos-cancel-btn' },
     });
 
-    // Cấu hình chung: admin_hotline
+    initSimpleCrud({
+      tableName: 'user_roles', singularLabel: 'Vai trò',
+      ids: { tbodyId: 'role-body', addBtnId: 'role-add-btn', modalId: 'role-modal', modalTitleId: 'role-modal-title', formId: 'role-form', nameInputId: 'role-name-input', cancelBtnId: 'role-cancel-btn' },
+    });
+
     const hotlineInput = document.getElementById('hotline-input');
     const generalMsg = document.getElementById('general-msg');
-
-    const { data: setting } = await supabase
-      .from('app_settings')
-      .select('value')
-      .eq('key', 'admin_hotline')
-      .maybeSingle();
+    const { data: setting } = await supabase.from('app_settings').select('value').eq('key', 'admin_hotline').maybeSingle();
     hotlineInput.value = setting?.value || '';
 
     document.getElementById('general-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       generalMsg.textContent = 'Đang lưu...';
-      const { error } = await supabase
-        .from('app_settings')
-        .upsert({ key: 'admin_hotline', value: hotlineInput.value.trim() }, { onConflict: 'key' });
+      const { error } = await supabase.from('app_settings').upsert({ key: 'admin_hotline', value: hotlineInput.value.trim() }, { onConflict: 'key' });
       generalMsg.textContent = error ? `Lỗi: ${error.message}` : 'Đã lưu.';
     });
   </script>
