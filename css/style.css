@@ -141,3 +141,13 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .switch input:checked + .slider { background: var(--success); }
 .switch input:checked + .slider::before { transform: translateX(20px); }
 .switch-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+
+.filters-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.filters-row input, .filters-row select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 13.5px; background: var(--card-bg); }
+.filters-row input { flex: 1; min-width: 200px; }
+.icon-btn.lock { background: var(--surface); color: var(--text-muted); }
+.icon-btn.lock:hover { background: var(--border); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.form-grid .full-width { grid-column: 1 / -1; }
+.password-row { display: flex; gap: 8px; align-items: flex-end; }
+.password-row .field-input { flex: 1; }

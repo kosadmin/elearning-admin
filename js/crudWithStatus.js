@@ -33,7 +33,7 @@ export async function initCrudWithStatus({ tableName, singularLabel, ids }) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${escapeHtml(row.name)}</td>
-        <td style="color:var(--text-muted);">${escapeHtml(row.description || '—')}</td>
+        <td>${escapeHtml(row.description || '—')}</td>
         <td>${row.is_active ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Ngừng</span>'}</td>
         <td>
           <button class="icon-btn edit" data-edit="${row.id}" title="Sửa">${ICON_EDIT}</button>
