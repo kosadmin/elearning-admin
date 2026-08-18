@@ -51,14 +51,23 @@
 
       <main class="content">
         <div class="filters-row">
-          <div style="flex:1;"></div>
+          <input id="f-search" type="text" placeholder="Tìm theo tên khoá học..." />
           <button id="add-course-btn" class="btn btn-primary">+ Thêm khoá học</button>
+        </div>
+
+        <div class="tabs-row" id="status-tabs">
+          <button class="tab-item active" data-status="">Tất cả</button>
+          <button class="tab-item" data-status="active">Hoạt động</button>
+          <button class="tab-item" data-status="inactive">Không hoạt động</button>
         </div>
 
         <div class="table-wrap">
           <div class="table-scroll">
             <table>
-              <thead><tr><th>Khoá học</th><th>Giảng viên</th><th>Cấp độ</th><th>Hiển thị</th><th>Trạng thái</th><th>Bài học</th><th>Thao tác</th></tr></thead>
+              <thead><tr>
+                <th>Tên khoá học</th><th>Giảng viên</th><th>Lĩnh vực</th><th>Cấp độ</th><th>Phòng ban</th>
+                <th>Mô tả</th><th>Mục tiêu</th><th>Bắt đầu</th><th>Kết thúc</th><th>Hiển thị</th><th>Trạng thái</th><th>Bài học</th><th>Thao tác</th>
+              </tr></thead>
               <tbody id="courses-body"></tbody>
             </table>
           </div>
@@ -67,59 +76,16 @@
     </div>
   </div>
 
-  <div id="course-modal" class="modal-overlay">
-    <div class="modal-box" style="width:520px;">
-      <h2 id="course-modal-title">Thêm khoá học</h2>
-      <form id="course-form">
-        <div class="form-grid">
-          <div class="full-width">
-            <label class="field-label">Tên khoá học *</label>
-            <input id="c-title" class="field-input" type="text" required />
-          </div>
-          <div>
-            <label class="field-label">Icon (emoji)</label>
-            <input id="c-icon" class="field-input" type="text" maxlength="4" />
-          </div>
-          <div>
-            <label class="field-label">Giảng viên</label>
-            <input id="c-instructor" class="field-input" type="text" />
-          </div>
-          <div class="full-width">
-            <label class="field-label">Mô tả</label>
-            <textarea id="c-description" class="field-input" rows="3"></textarea>
-          </div>
-          <div class="full-width">
-            <label class="field-label">Mục tiêu học tập (mỗi dòng 1 mục tiêu)</label>
-            <textarea id="c-objectives" class="field-input" rows="3" placeholder="VD:&#10;Nắm vững quy trình bán hàng&#10;Thành thạo kỹ năng giao tiếp"></textarea>
-          </div>
-          <div>
-            <label class="field-label">Cấp độ</label>
-            <select id="c-level" class="field-input">
-              <option value="">-- Không chọn --</option>
-              <option value="Cơ bản">Cơ bản</option>
-              <option value="Trung cấp">Trung cấp</option>
-              <option value="Nâng cao">Nâng cao</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label">Phòng ban phụ trách</label>
-            <select id="c-department" class="field-input" data-select="department" data-empty-label="-- Không giới hạn --"></select>
-          </div>
-          <div>
-            <label class="field-label">Hiển thị</label>
-            <select id="c-visibility" class="field-input">
-              <option value="private">Riêng tư (cần đăng nhập, được gán mới thấy)</option>
-              <option value="public">Công khai (khách cũng xem được)</option>
-            </select>
-          </div>
-        </div>
-        <div class="switch-row">
-          <label class="switch"><input type="checkbox" id="c-status" checked /><span class="slider"></span></label>
-          <span>Đang hoạt động</span>
-        </div>
+  <div id="create-course-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Tạo khoá học mới</h2>
+      <form id="create-course-form">
+        <label class="field-label">Tên khoá học *</label>
+        <input id="new-course-title" class="field-input" type="text" required />
+        <p class="field-hint">Sau khi tạo, bạn sẽ được chuyển sang màn chỉnh sửa để điền đầy đủ thông tin.</p>
         <div class="modal-actions">
-          <button type="button" id="course-cancel-btn" class="btn btn-secondary">Huỷ</button>
-          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button type="button" id="create-course-cancel" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary">Tạo & tiếp tục</button>
         </div>
       </form>
     </div>

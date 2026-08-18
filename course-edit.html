@@ -53,12 +53,83 @@
         <a href="courses.html" class="btn btn-secondary" style="margin-bottom:16px; display:inline-flex;">← Về danh sách khoá học</a>
 
         <div class="tabs-row" id="course-tabs">
-          <button class="tab-item active" data-tab="lessons">Bài học</button>
+          <button class="tab-item active" data-tab="info">Thông tin</button>
+          <button class="tab-item" data-tab="lessons">Bài học</button>
           <button class="tab-item" data-tab="assign">Phân quyền</button>
           <button class="tab-item" data-tab="progress">Báo cáo tiến độ</button>
         </div>
 
-        <div class="tab-panel" data-tab-panel="lessons">
+        <div class="tab-panel" data-tab-panel="info">
+          <div class="card" style="max-width:640px;">
+            <form id="course-info-form">
+              <div class="form-grid">
+                <div class="full-width">
+                  <label class="field-label">Tên khoá học *</label>
+                  <input id="c-title" class="field-input" type="text" required />
+                </div>
+                <div class="full-width">
+                  <label class="field-label">Icon</label>
+                  <input id="c-icon" class="field-input" type="text" maxlength="4" style="width:100px;" />
+                  <div class="icon-picker" id="icon-picker"></div>
+                </div>
+                <div>
+                  <label class="field-label">Giảng viên</label>
+                  <input id="c-instructor" class="field-input" type="text" />
+                </div>
+                <div>
+                  <label class="field-label">Lĩnh vực</label>
+                  <select id="c-category" class="field-input"></select>
+                </div>
+                <div class="full-width">
+                  <label class="field-label">Mô tả</label>
+                  <textarea id="c-description" class="field-input" rows="3"></textarea>
+                </div>
+                <div class="full-width">
+                  <label class="field-label">Mục tiêu học tập (mỗi dòng 1 mục tiêu)</label>
+                  <textarea id="c-objectives" class="field-input" rows="3"></textarea>
+                </div>
+                <div>
+                  <label class="field-label">Cấp độ</label>
+                  <select id="c-level" class="field-input">
+                    <option value="">-- Không chọn --</option>
+                    <option value="Cơ bản">Cơ bản</option>
+                    <option value="Trung cấp">Trung cấp</option>
+                    <option value="Nâng cao">Nâng cao</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label">Phòng ban phụ trách</label>
+                  <select id="c-department" class="field-input"></select>
+                </div>
+                <div>
+                  <label class="field-label">Ngày bắt đầu</label>
+                  <input id="c-start-date" class="field-input" type="date" />
+                </div>
+                <div>
+                  <label class="field-label">Ngày kết thúc</label>
+                  <input id="c-end-date" class="field-input" type="date" />
+                </div>
+                <div class="full-width">
+                  <label class="field-label">Hiển thị</label>
+                  <select id="c-visibility" class="field-input">
+                    <option value="private">Riêng tư (cần đăng nhập, được gán mới thấy)</option>
+                    <option value="public">Công khai (khách cũng xem được)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="switch-row">
+                <label class="switch"><input type="checkbox" id="c-status" /><span class="slider"></span></label>
+                <span>Đang hoạt động</span>
+              </div>
+              <div class="modal-actions" style="justify-content:flex-start;">
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+              </div>
+              <p id="info-msg" class="field-hint"></p>
+            </form>
+          </div>
+        </div>
+
+        <div class="tab-panel hidden" data-tab-panel="lessons">
           <div class="card"><p class="field-hint">Quản lý bài học (upload/gắn link) sẽ làm ở bước tiếp theo.</p></div>
         </div>
         <div class="tab-panel hidden" data-tab-panel="assign">
@@ -73,13 +144,9 @@
 
   <script type="module">
     import { requireAdmin } from './js/auth.js';
-    import { initTabs } from './js/tabs.js';
+    import { initCourseEditPage } from './js/courseEdit.js';
     await requireAdmin();
-    initTabs('#course-tabs');
-
-    const params = new URLSearchParams(location.search);
-    const title = params.get('title');
-    if (title) document.getElementById('page-title').textContent = title;
+    initCourseEditPage();
   </script>
 </body>
 </html>
