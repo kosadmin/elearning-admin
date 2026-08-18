@@ -4,7 +4,7 @@ const ICON_EDIT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" s
 const ICON_LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
 const ICON_UNLOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`;
 
-let departments = [], positions = [], roles = [];
+let departments = [], positions = [];
 
 export async function initStudentsPage() {
   await loadLookups();
@@ -16,14 +16,12 @@ export async function initStudentsPage() {
 }
 
 async function loadLookups() {
-  const [depRes, posRes, roleRes] = await Promise.all([
+  const [depRes, posRes] = await Promise.all([
     supabase.from('departments').select('id, name').eq('is_active', true).order('name'),
     supabase.from('positions').select('id, name').eq('is_active', true).order('name'),
-    supabase.from('user_roles').select('id, name').order('name'),
   ]);
   departments = depRes.data || [];
   positions = posRes.data || [];
-  roles = roleRes.data || [];
 }
 
 function optionsHtml(list, emptyLabel) {
@@ -33,7 +31,6 @@ function optionsHtml(list, emptyLabel) {
 function populateSelects() {
   document.querySelectorAll('[data-select="department"]').forEach(el => el.innerHTML = optionsHtml(departments, el.dataset.emptyLabel));
   document.querySelectorAll('[data-select="position"]').forEach(el => el.innerHTML = optionsHtml(positions, el.dataset.emptyLabel));
-  document.querySelectorAll('[data-select="role"]').forEach(el => el.innerHTML = optionsHtml(roles, el.dataset.emptyLabel));
 }
 
 async function loadStudents() {
@@ -43,7 +40,7 @@ async function loadStudents() {
 
   let query = supabase
     .from('profiles')
-    .select('id, full_name, employee_code, email, phone, role, is_active, departments(name), positions(name), user_roles(name)')
+    .select('id, full_name, employee_code, email, phone, role, is_active, departments(name), positions(name)')
     .order('full_name');
 
   if (search) {
@@ -57,11 +54,11 @@ async function loadStudents() {
   tbody.innerHTML = '';
 
   if (error) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
     return;
   }
   if (!data.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Không tìm thấy người dùng phù hợp.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Không tìm thấy người dùng phù hợp.</td></tr>`;
     return;
   }
 
@@ -71,7 +68,8 @@ async function loadStudents() {
       <td>${escapeHtml(row.full_name || '—')}</td>
       <td>${escapeHtml(row.employee_code)}</td>
       <td>${escapeHtml(row.departments?.name || '—')}</td>
-      <td>${escapeHtml(row.user_roles?.name || '—')}</td>
+      <td>${escapeHtml(row.positions?.name || '—')}</td>
+      <td>${row.role === 'admin' ? '<span class="badge badge-primary">Quản trị viên</span>' : '<span class="badge badge-neutral">Học viên</span>'}</td>
       <td>${row.is_active ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Đã khoá</span>'}</td>
       <td>
         <button class="icon-btn edit" data-edit="${row.id}" title="Sửa">${ICON_EDIT}</button>
@@ -111,6 +109,7 @@ function wireCreateModal() {
   const modal = document.getElementById('create-modal');
   document.getElementById('create-add-btn').addEventListener('click', () => {
     document.getElementById('create-form').reset();
+    document.getElementById('create-msg').textContent = '';
     modal.classList.add('open');
   });
   document.getElementById('create-cancel-btn').addEventListener('click', () => modal.classList.remove('open'));
@@ -129,7 +128,6 @@ function wireCreateModal() {
       employee_code: document.getElementById('c-employee-code').value.trim(),
       department_id: document.getElementById('c-department').value,
       position_id: document.getElementById('c-position').value,
-      job_role_id: document.getElementById('c-role').value || null,
       email: document.getElementById('c-email').value.trim(),
       phone: document.getElementById('c-phone').value.trim(),
       role: document.getElementById('c-system-role').value,
@@ -139,7 +137,14 @@ function wireCreateModal() {
     const { data, error } = await supabase.functions.invoke('admin-create-user', { body: payload });
 
     if (error) {
-      msg.textContent = `Lỗi: ${error.message}`;
+      let detail = error.message;
+      if (error.context) {
+        try {
+          const body = await error.context.json();
+          if (body?.error) detail = body.error;
+        } catch (_) { /* giữ nguyên detail mặc định */ }
+      }
+      msg.textContent = `Lỗi: ${detail}`;
       return;
     }
     if (data?.error) {
@@ -165,7 +170,6 @@ function wireEditModal() {
       employee_code: document.getElementById('e-employee-code').value.trim(),
       department_id: document.getElementById('e-department').value,
       position_id: document.getElementById('e-position').value,
-      job_role_id: document.getElementById('e-role').value || null,
       email: document.getElementById('e-email').value.trim() || null,
       phone: document.getElementById('e-phone').value.trim() || null,
       role: document.getElementById('e-system-role').value,
@@ -182,7 +186,7 @@ function wireEditModal() {
 async function openEditModal(id) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, employee_code, email, phone, role, is_active, department_id, position_id, job_role_id')
+    .select('id, full_name, employee_code, email, phone, role, is_active, department_id, position_id')
     .eq('id', id).single();
   if (error) { alert(error.message); return; }
 
@@ -191,7 +195,6 @@ async function openEditModal(id) {
   document.getElementById('e-employee-code').value = data.employee_code;
   document.getElementById('e-department').value = data.department_id || '';
   document.getElementById('e-position').value = data.position_id || '';
-  document.getElementById('e-role').value = data.job_role_id || '';
   document.getElementById('e-email').value = data.email || '';
   document.getElementById('e-phone').value = data.phone || '';
   document.getElementById('e-system-role').value = data.role;

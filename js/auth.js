@@ -1,7 +1,6 @@
 import { supabase } from './supabaseClient.js';
 
 export async function requireAdmin() {
-  // Vẽ ngay từ cache trước (nếu có) để tránh giật khi chuyển trang
   const cachedName = sessionStorage.getItem('admin_full_name');
   if (cachedName) fillTopbarUser(cachedName);
   highlightActiveNav();

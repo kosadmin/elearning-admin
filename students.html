@@ -64,9 +64,9 @@
         <div class="table-wrap">
           <table class="table-fixed">
             <colgroup>
-              <col style="width:20%"><col style="width:14%"><col style="width:18%"><col style="width:16%"><col style="width:14%"><col style="width:18%">
+              <col style="width:17%"><col style="width:11%"><col style="width:15%"><col style="width:15%"><col style="width:12%"><col style="width:12%"><col style="width:18%">
             </colgroup>
-            <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+            <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Chức danh</th><th>Quyền</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
             <tbody id="students-body"></tbody>
           </table>
         </div>
@@ -74,7 +74,6 @@
     </div>
   </div>
 
-  <!-- Modal Tạo tài khoản -->
   <div id="create-modal" class="modal-overlay">
     <div class="modal-box" style="width:480px;">
       <h2>Tạo tài khoản người dùng</h2>
@@ -95,10 +94,6 @@
           <div>
             <label class="field-label">Chức danh *</label>
             <select id="c-position" class="field-input" data-select="position" data-empty-label="-- Chọn chức danh --" required></select>
-          </div>
-          <div>
-            <label class="field-label">Vai trò</label>
-            <select id="c-role" class="field-input" data-select="role" data-empty-label="-- Không chọn --"></select>
           </div>
           <div>
             <label class="field-label">Quyền hệ thống *</label>
@@ -133,7 +128,6 @@
     </div>
   </div>
 
-  <!-- Modal Sửa thông tin -->
   <div id="edit-modal" class="modal-overlay">
     <div class="modal-box" style="width:480px;">
       <h2>Sửa thông tin người dùng</h2>
@@ -155,10 +149,6 @@
           <div>
             <label class="field-label">Chức danh</label>
             <select id="e-position" class="field-input" data-select="position" data-empty-label="-- Chọn chức danh --" required></select>
-          </div>
-          <div>
-            <label class="field-label">Vai trò</label>
-            <select id="e-role" class="field-input" data-select="role" data-empty-label="-- Không chọn --"></select>
           </div>
           <div>
             <label class="field-label">Quyền hệ thống</label>
