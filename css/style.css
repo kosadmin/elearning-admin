@@ -155,3 +155,7 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .stat-icon.blue { background: #3B82F6; } .stat-icon.purple { background: #8B5CF6; } .stat-icon.orange { background: var(--primary); } .stat-icon.green { background: var(--success); }
 .stat-value { font-size: 22px; font-weight: 800; }
 .stat-label { font-size: 12px; opacity: 0.75; }
+
+.table-scroll { overflow-x: auto; }
+.table-scroll table { table-layout: auto; width: max-content; min-width: 100%; }
+.table-scroll th, .table-scroll td { white-space: nowrap; }

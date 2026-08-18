@@ -53,22 +53,22 @@
         <div class="filters-row">
           <input id="f-search" type="text" placeholder="Tìm theo tên, mã NV, email, SĐT..." />
           <select id="f-department" data-select="department" data-empty-label="Tất cả phòng ban"></select>
-          <select id="f-status">
-            <option value="">Tất cả trạng thái</option>
-            <option value="active">Đang hoạt động</option>
-            <option value="inactive">Đã khoá</option>
-          </select>
           <button id="create-add-btn" class="btn btn-primary">+ Tạo tài khoản</button>
         </div>
 
+        <div class="tabs-row" id="status-tabs">
+          <button class="tab-item active" data-status="">Tất cả</button>
+          <button class="tab-item" data-status="active">Đang hoạt động</button>
+          <button class="tab-item" data-status="inactive">Đã khoá</button>
+        </div>
+
         <div class="table-wrap">
-          <table class="table-fixed">
-            <colgroup>
-              <col style="width:17%"><col style="width:11%"><col style="width:15%"><col style="width:15%"><col style="width:12%"><col style="width:12%"><col style="width:18%">
-            </colgroup>
-            <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Chức danh</th><th>Quyền</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
-            <tbody id="students-body"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Chức danh</th><th>Quyền</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+              <tbody id="students-body"></tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>

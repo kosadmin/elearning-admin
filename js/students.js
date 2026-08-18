@@ -33,10 +33,14 @@ function populateSelects() {
   document.querySelectorAll('[data-select="position"]').forEach(el => el.innerHTML = optionsHtml(positions, el.dataset.emptyLabel));
 }
 
+function currentStatusFilter() {
+  return document.querySelector('#status-tabs .tab-item.active')?.dataset.status || '';
+}
+
 async function loadStudents() {
   const search = document.getElementById('f-search').value.trim();
   const depFilter = document.getElementById('f-department').value;
-  const statusFilter = document.getElementById('f-status').value;
+  const statusFilter = currentStatusFilter();
 
   let query = supabase
     .from('profiles')
@@ -83,7 +87,14 @@ async function loadStudents() {
 function wireFilters() {
   document.getElementById('f-search').addEventListener('input', debounce(loadStudents, 350));
   document.getElementById('f-department').addEventListener('change', loadStudents);
-  document.getElementById('f-status').addEventListener('change', loadStudents);
+
+  document.querySelectorAll('#status-tabs .tab-item').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#status-tabs .tab-item').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      loadStudents();
+    });
+  });
 
   document.getElementById('students-body').addEventListener('click', async (e) => {
     const btn = e.target.closest('button');
@@ -104,7 +115,6 @@ function wireFilters() {
   });
 }
 
-/* ---------- Tạo tài khoản ---------- */
 function wireCreateModal() {
   const modal = document.getElementById('create-modal');
   document.getElementById('create-add-btn').addEventListener('click', () => {
@@ -142,7 +152,7 @@ function wireCreateModal() {
         try {
           const body = await error.context.json();
           if (body?.error) detail = body.error;
-        } catch (_) { /* giữ nguyên detail mặc định */ }
+        } catch (_) {}
       }
       msg.textContent = `Lỗi: ${detail}`;
       return;
@@ -157,7 +167,6 @@ function wireCreateModal() {
   });
 }
 
-/* ---------- Sửa thông tin ---------- */
 function wireEditModal() {
   const modal = document.getElementById('edit-modal');
   document.getElementById('edit-cancel-btn').addEventListener('click', () => modal.classList.remove('open'));
