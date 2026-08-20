@@ -26,6 +26,7 @@ async function loadCourses() {
 
   const { data, error } = await query;
   const grid = document.getElementById('courses-grid');
+  if (!grid) return; // tránh lỗi nếu HTML thiếu phần tử này
   grid.innerHTML = '';
 
   if (error) { grid.innerHTML = `<p class="field-hint">Lỗi: ${error.message}</p>`; return; }
@@ -56,7 +57,8 @@ async function loadCourses() {
 }
 
 function wireFilters() {
-  document.getElementById('f-search').addEventListener('input', debounce(loadCourses, 350));
+  document.getElementById('f-search')?.addEventListener('input', debounce(loadCourses, 350));
+
   document.querySelectorAll('#status-tabs .tab-item').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('#status-tabs .tab-item').forEach(t => t.classList.remove('active'));
@@ -65,7 +67,7 @@ function wireFilters() {
     });
   });
 
-  document.getElementById('courses-grid').addEventListener('click', async (e) => {
+  document.getElementById('courses-grid')?.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-delete]');
     if (!btn) return;
     e.preventDefault();
