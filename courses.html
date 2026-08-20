@@ -61,17 +61,7 @@
           <button class="tab-item" data-status="inactive">Không hoạt động</button>
         </div>
 
-        <div class="table-wrap">
-          <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th>Tên khoá học</th><th>Giảng viên</th><th>Lĩnh vực</th><th>Cấp độ</th><th>Phòng ban</th>
-                <th>Mô tả</th><th>Mục tiêu</th><th>Bắt đầu</th><th>Kết thúc</th><th>Hiển thị</th><th>Trạng thái</th><th>Bài học</th><th>Thao tác</th>
-              </tr></thead>
-              <tbody id="courses-body"></tbody>
-            </table>
-          </div>
-        </div>
+        <div class="course-grid" id="courses-grid"></div>
       </main>
     </div>
   </div>
@@ -82,7 +72,7 @@
       <form id="create-course-form">
         <label class="field-label">Tên khoá học *</label>
         <input id="new-course-title" class="field-input" type="text" required />
-        <p class="field-hint">Sau khi tạo, bạn sẽ được chuyển sang màn chỉnh sửa để điền đầy đủ thông tin.</p>
+        <p class="field-hint">Sau khi tạo, bạn sẽ được chuyển sang màn chi tiết để điền đầy đủ thông tin.</p>
         <div class="modal-actions">
           <button type="button" id="create-course-cancel" class="btn btn-secondary">Huỷ</button>
           <button type="submit" class="btn btn-primary">Tạo & tiếp tục</button>

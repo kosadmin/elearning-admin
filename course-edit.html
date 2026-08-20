@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<title>Quản lý khoá học - E-Learning Admin</title>
+<title>Chi tiết khoá học - E-Learning Admin</title>
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -39,7 +39,7 @@
 
     <div class="main-area">
       <header class="topbar-fixed">
-        <h2 class="topbar-title" id="page-title">Quản lý khoá học</h2>
+        <h2 class="topbar-title" id="page-title">Chi tiết khoá học</h2>
         <div class="topbar-user">
           <div class="avatar-circle" id="topbar-avatar">A</div>
           <div>
@@ -59,8 +59,36 @@
           <button class="tab-item" data-tab="progress">Báo cáo tiến độ</button>
         </div>
 
+        <!-- TAB: THÔNG TIN -->
         <div class="tab-panel" data-tab-panel="info">
-          <div class="card" style="max-width:640px;">
+          <div id="info-view" class="card" style="max-width:640px;">
+            <div class="info-view-header">
+              <div class="info-view-icon" id="view-icon">📘</div>
+              <div>
+                <div class="info-view-title" id="view-title">—</div>
+                <div class="info-view-sub" id="view-instructor">—</div>
+              </div>
+              <button id="edit-info-btn" class="btn btn-secondary" style="margin-left:auto;">✏️ Sửa thông tin</button>
+            </div>
+            <div class="info-badges" id="view-badges"></div>
+            <div class="info-section">
+              <div class="info-section-label">Mô tả</div>
+              <div id="view-description">—</div>
+            </div>
+            <div class="info-section">
+              <div class="info-section-label">Mục tiêu học tập</div>
+              <ul id="view-objectives"></ul>
+            </div>
+            <div class="info-grid">
+              <div><span class="info-grid-label">Lĩnh vực</span><span id="view-category">—</span></div>
+              <div><span class="info-grid-label">Cấp độ</span><span id="view-level">—</span></div>
+              <div><span class="info-grid-label">Phòng ban phụ trách</span><span id="view-department">—</span></div>
+              <div><span class="info-grid-label">Ngày bắt đầu</span><span id="view-start">—</span></div>
+              <div><span class="info-grid-label">Ngày kết thúc</span><span id="view-end">—</span></div>
+            </div>
+          </div>
+
+          <div id="info-edit" class="card hidden" style="max-width:640px;">
             <form id="course-info-form">
               <div class="form-grid">
                 <div class="full-width">
@@ -122,6 +150,7 @@
                 <span>Đang hoạt động</span>
               </div>
               <div class="modal-actions" style="justify-content:flex-start;">
+                <button type="button" id="cancel-edit-info-btn" class="btn btn-secondary">Huỷ</button>
                 <button type="submit" class="btn btn-primary">Lưu thông tin</button>
               </div>
               <p id="info-msg" class="field-hint"></p>
@@ -129,16 +158,116 @@
           </div>
         </div>
 
+        <!-- TAB: BÀI HỌC -->
         <div class="tab-panel hidden" data-tab-panel="lessons">
-          <div class="card"><p class="field-hint">Quản lý bài học (upload/gắn link) sẽ làm ở bước tiếp theo.</p></div>
+          <div class="table-header" style="padding:0 0 14px;">
+            <span class="card-title" style="margin:0;">Danh sách bài học</span>
+            <button id="add-lesson-btn" class="btn btn-primary">+ Thêm bài học</button>
+          </div>
+          <div id="lessons-list"></div>
         </div>
+
+        <!-- TAB: PHÂN QUYỀN -->
         <div class="tab-panel hidden" data-tab-panel="assign">
-          <div class="card"><p class="field-hint">Phân quyền theo người dùng/phòng ban/chức danh sẽ làm ở bước tiếp theo.</p></div>
+          <div class="card" style="margin-bottom:18px;">
+            <p class="card-title">Gán theo phòng ban / chức danh</p>
+            <div class="form-grid">
+              <div>
+                <label class="field-label">Phòng ban</label>
+                <div class="password-row">
+                  <select id="assign-department" class="field-input"></select>
+                  <button id="assign-department-btn" class="btn btn-secondary">Gán cả phòng ban</button>
+                </div>
+              </div>
+              <div>
+                <label class="field-label">Chức danh</label>
+                <div class="password-row">
+                  <select id="assign-position" class="field-input"></select>
+                  <button id="assign-position-btn" class="btn btn-secondary">Gán cả chức danh</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:18px;">
+            <p class="card-title">Gán theo người dùng cụ thể</p>
+            <input id="assign-search" class="field-input" type="text" placeholder="Tìm theo tên hoặc mã nhân sự..." />
+            <div id="assign-search-results" style="margin-top:10px; max-height:220px; overflow-y:auto;"></div>
+            <button id="assign-selected-btn" class="btn btn-primary" style="margin-top:12px;">Gán học viên đã chọn</button>
+          </div>
+
+          <div class="table-wrap">
+            <div class="table-header"><span class="card-title" style="margin:0;">Học viên đã được gán</span></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Ngày gán</th><th>Thao tác</th></tr></thead>
+                <tbody id="assigned-body"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
+        <!-- TAB: BÁO CÁO TIẾN ĐỘ -->
         <div class="tab-panel hidden" data-tab-panel="progress">
-          <div class="card"><p class="field-hint">Báo cáo tiến độ học viên sẽ làm ở bước tiếp theo.</p></div>
+          <div class="table-wrap">
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Bài học hoàn thành</th><th>Tiến độ</th></tr></thead>
+                <tbody id="progress-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="field-hint" style="margin-top:10px;">Điểm bài kiểm tra sẽ hiển thị thêm khi có bài kiểm tra gắn với khoá học này.</p>
         </div>
       </main>
+    </div>
+  </div>
+
+  <div id="lesson-modal" class="modal-overlay">
+    <div class="modal-box" style="width:460px;">
+      <h2 id="lesson-modal-title">Thêm bài học</h2>
+      <form id="lesson-form">
+        <label class="field-label">Tên bài học *</label>
+        <input id="l-title" class="field-input" type="text" required />
+
+        <label class="field-label">Nguồn nội dung</label>
+        <div class="radio-row">
+          <label><input type="radio" name="lesson-source" value="upload" checked /> Tải file lên</label>
+          <label><input type="radio" name="lesson-source" value="link" /> Gắn link ngoài</label>
+        </div>
+
+        <div id="upload-fields">
+          <label class="field-label">Loại file *</label>
+          <select id="l-type-upload" class="field-input">
+            <option value="video">Video</option>
+            <option value="pdf">PDF</option>
+            <option value="doc">Văn bản (doc)</option>
+            <option value="image">Hình ảnh</option>
+          </select>
+          <label class="field-label">Chọn file *</label>
+          <input id="l-file" class="field-input" type="file" />
+        </div>
+
+        <div id="link-fields" class="hidden">
+          <label class="field-label">Loại nội dung *</label>
+          <select id="l-type-link" class="field-input">
+            <option value="video">Video (YouTube...)</option>
+            <option value="pdf">PDF</option>
+            <option value="doc">Văn bản (doc)</option>
+            <option value="sheet">Bảng tính (sheet)</option>
+            <option value="ppt">Trình chiếu (ppt)</option>
+            <option value="image">Hình ảnh</option>
+          </select>
+          <label class="field-label">Đường dẫn (URL) *</label>
+          <input id="l-url" class="field-input" type="url" placeholder="https://..." />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="lesson-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary" id="lesson-submit-btn">Lưu</button>
+        </div>
+        <p id="lesson-msg" class="field-hint"></p>
+      </form>
     </div>
   </div>
 
