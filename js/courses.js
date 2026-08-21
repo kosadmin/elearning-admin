@@ -1,6 +1,10 @@
 import { supabase } from './supabaseClient.js';
 
-const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+const ICON_TRASH = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+const ICON_BOOK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+
+// Xoay vòng 4 tông màu bìa card cho đỡ đơn điệu khi danh sách dài
+const COVER_CLASSES = ['cover-0', 'cover-1', 'cover-2', 'cover-3'];
 
 export async function initCoursesPage() {
   wireCreateModal();
@@ -29,27 +33,38 @@ async function loadCourses() {
   if (!grid) return; // tránh lỗi nếu HTML thiếu phần tử này
   grid.innerHTML = '';
 
-  if (error) { grid.innerHTML = `<p class="field-hint">Lỗi: ${error.message}</p>`; return; }
-  if (!data.length) { grid.innerHTML = `<p class="field-hint">Chưa có khoá học nào.</p>`; return; }
+  if (error) {
+    grid.innerHTML = `<div class="empty-illustration"><div class="icon">⚠️</div><p>Lỗi: ${escapeHtml(error.message)}</p></div>`;
+    return;
+  }
+  if (!data.length) {
+    grid.innerHTML = `<div class="empty-illustration"><div class="icon">📚</div><p>Chưa có khoá học nào phù hợp.</p></div>`;
+    return;
+  }
 
-  data.forEach(row => {
+  data.forEach((row, idx) => {
     const lessonCount = row.lessons?.[0]?.count || 0;
+    const coverClass = COVER_CLASSES[idx % COVER_CLASSES.length];
+    const visibilityBadge = row.visibility === 'public'
+      ? '<span class="badge badge-primary badge-sm">Công khai</span>'
+      : '<span class="badge badge-neutral badge-sm" style="background:rgba(255,255,255,0.88);">Riêng tư</span>';
+
     const card = document.createElement('a');
     card.href = `course-edit.html?id=${row.id}`;
-    card.className = 'course-card';
+    card.className = 'course-card-v2';
     card.innerHTML = `
-      <button class="icon-btn delete course-card-delete" data-delete="${row.id}" title="Xoá">${ICON_TRASH}</button>
-      <div class="course-card-icon">${row.icon || '📘'}</div>
-      <div class="course-card-title">${escapeHtml(row.title)}</div>
-      <div class="course-card-sub">${row.instructor_name ? 'GV: ' + escapeHtml(row.instructor_name) : 'Chưa có giảng viên'}</div>
-      <div class="course-card-badges">
-        ${row.course_categories?.name ? `<span class="badge badge-neutral">${escapeHtml(row.course_categories.name)}</span>` : ''}
-        ${row.level ? `<span class="badge badge-neutral">${escapeHtml(row.level)}</span>` : ''}
-        ${row.visibility === 'public' ? '<span class="badge badge-primary">Công khai</span>' : ''}
+      <div class="course-card-cover ${coverClass}">
+        <div class="course-card-badges-v2">${visibilityBadge}</div>
+        <button class="course-card-menu" data-delete="${row.id}" title="Xoá">${ICON_TRASH}</button>
+        <span class="emoji">${row.icon || '📘'}</span>
       </div>
-      <div class="course-card-footer">
-        <span>${lessonCount} bài học</span>
-        ${row.status === 'active' ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Ngừng</span>'}
+      <div class="course-card-body">
+        <div class="course-card-title-v2">${escapeHtml(row.title)}</div>
+        <div class="course-card-sub-v2">${row.instructor_name ? 'GV: ' + escapeHtml(row.instructor_name) : 'Chưa có giảng viên'}${row.course_categories?.name ? ' · ' + escapeHtml(row.course_categories.name) : ''}</div>
+        <div class="course-card-footer-v2">
+          <div class="course-card-meta">${ICON_BOOK}<span>${lessonCount} bài học</span></div>
+          <span class="course-card-status-pill ${row.status === 'active' ? 'active' : 'inactive'}">${row.status === 'active' ? 'Hoạt động' : 'Ngừng'}</span>
+        </div>
       </div>
     `;
     grid.appendChild(card);

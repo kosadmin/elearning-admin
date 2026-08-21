@@ -7,6 +7,7 @@ const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" 
 const ICON_UP = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`;
 const ICON_DOWN = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 const TYPE_LABELS = { video: 'Video', pdf: 'PDF', doc: 'Văn bản', image: 'Hình ảnh', sheet: 'Bảng tính', ppt: 'Trình chiếu' };
+const COVER_CLASSES = ['cover-0', 'cover-1', 'cover-2', 'cover-3'];
 
 let courseId = null;
 let currentCourse = null;
@@ -71,15 +72,27 @@ async function loadCourse() {
 }
 
 function renderView(data) {
+  const badgesHtml = buildBadgesHtml(data);
+
+  // Elements gốc (ẩn) — giữ để không phải sửa các phần khác của trang
   document.getElementById('view-icon').textContent = data.icon || '📘';
   document.getElementById('view-title').textContent = data.title;
   document.getElementById('view-instructor').textContent = data.instructor_name ? `Giảng viên: ${data.instructor_name}` : 'Chưa có giảng viên';
-  document.getElementById('view-description').textContent = data.description || 'Chưa có mô tả.';
+  document.getElementById('view-description').textContent = data.description || 'Chưa có mô tả cho khoá học này.';
+  document.getElementById('view-badges').innerHTML = badgesHtml;
 
-  const badges = [];
-  badges.push(data.status === 'active' ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Ngừng</span>');
-  badges.push(data.visibility === 'public' ? '<span class="badge badge-primary">Công khai</span>' : '<span class="badge badge-neutral">Riêng tư</span>');
-  document.getElementById('view-badges').innerHTML = badges.join('');
+  // Hero header mới ở đầu trang
+  const heroCover = document.getElementById('hero-cover');
+  if (heroCover) {
+    heroCover.textContent = data.icon || '📘';
+    heroCover.className = 'detail-hero-cover ' + COVER_CLASSES[(courseIdHash(courseId)) % COVER_CLASSES.length];
+  }
+  const heroTitle = document.getElementById('hero-title');
+  if (heroTitle) heroTitle.textContent = data.title;
+  const heroInstructor = document.getElementById('hero-instructor');
+  if (heroInstructor) heroInstructor.textContent = data.instructor_name ? `Giảng viên: ${data.instructor_name}` : 'Chưa có giảng viên';
+  const heroBadges = document.getElementById('hero-badges');
+  if (heroBadges) heroBadges.innerHTML = badgesHtml;
 
   const objList = document.getElementById('view-objectives');
   objList.innerHTML = (data.objectives && data.objectives.length)
@@ -91,6 +104,21 @@ function renderView(data) {
   document.getElementById('view-department').textContent = data.departments?.name || '—';
   document.getElementById('view-start').textContent = data.start_date ? new Date(data.start_date).toLocaleDateString('vi-VN') : '—';
   document.getElementById('view-end').textContent = data.end_date ? new Date(data.end_date).toLocaleDateString('vi-VN') : '—';
+}
+
+function buildBadgesHtml(data) {
+  const badges = [];
+  badges.push(data.status === 'active' ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Ngừng</span>');
+  badges.push(data.visibility === 'public' ? '<span class="badge badge-primary">Công khai</span>' : '<span class="badge badge-neutral">Riêng tư</span>');
+  return badges.join('');
+}
+
+// Băm chuỗi id đơn giản chỉ để chọn ổn định 1 trong 4 tông màu bìa cho mỗi khoá học
+function courseIdHash(id) {
+  let hash = 0;
+  const str = String(id || '');
+  for (let i = 0; i < str.length; i++) hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  return hash;
 }
 
 function fillEditForm(data) {
@@ -213,7 +241,7 @@ async function loadLessons() {
   lessonsCache = data || [];
   const wrap = document.getElementById('lessons-list');
   if (error) { wrap.innerHTML = `<p class="field-hint">Lỗi: ${error.message}</p>`; return; }
-  if (!lessonsCache.length) { wrap.innerHTML = `<p class="field-hint">Chưa có bài học nào.</p>`; return; }
+  if (!lessonsCache.length) { wrap.innerHTML = `<div class="empty-illustration"><div class="icon">🎬</div><p>Chưa có bài học nào.</p></div>`; return; }
 
   wrap.innerHTML = lessonsCache.map((l, idx) => `
     <div class="lesson-row">

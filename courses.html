@@ -50,18 +50,26 @@
       </header>
 
       <main class="content">
-        <div class="filters-row">
-          <input id="f-search" type="text" placeholder="Tìm theo tên khoá học..." />
+        <div class="hero-header">
+          <h1>Khoá học</h1>
+          <p>Quản lý nội dung, bài học và phân quyền truy cập cho toàn bộ khoá học</p>
+        </div>
+
+        <div class="toolbar-row">
+          <div class="toolbar-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="f-search" type="text" placeholder="Tìm theo tên khoá học..." />
+          </div>
           <button id="add-course-btn" class="btn btn-primary">+ Thêm khoá học</button>
         </div>
 
-        <div class="tabs-row" id="status-tabs">
+        <div class="pill-tabs" id="status-tabs">
           <button class="tab-item active" data-status="">Tất cả</button>
           <button class="tab-item" data-status="active">Hoạt động</button>
           <button class="tab-item" data-status="inactive">Không hoạt động</button>
         </div>
 
-        <div class="course-grid" id="courses-grid"></div>
+        <div class="course-grid-v2" id="courses-grid"></div>
       </main>
     </div>
   </div>

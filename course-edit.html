@@ -50,7 +50,20 @@
       </header>
 
       <main class="content">
-        <a href="courses.html" class="btn btn-secondary" style="margin-bottom:16px; display:inline-flex;">← Về danh sách khoá học</a>
+        <a href="courses.html" class="back-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Về danh sách khoá học
+        </a>
+
+        <!-- HERO: ảnh minh hoạ + tên khoá học + badge (đồng bộ dữ liệu với tab Thông tin bên dưới, điền bởi js/courseEdit.js) -->
+        <div class="detail-hero">
+          <div class="detail-hero-cover cover-0" id="hero-cover">📘</div>
+          <div class="detail-hero-body">
+            <h1 class="detail-hero-title" id="hero-title">—</h1>
+            <p class="detail-hero-sub" id="hero-instructor">—</p>
+            <div class="detail-hero-badges" id="hero-badges"></div>
+          </div>
+        </div>
 
         <div class="tabs-row" id="course-tabs">
           <button class="tab-item active" data-tab="info">Thông tin</button>
@@ -61,30 +74,37 @@
 
         <!-- TAB: THÔNG TIN -->
         <div class="tab-panel" data-tab-panel="info">
-          <div id="info-view" class="card" style="max-width:640px;">
-            <div class="info-view-header">
-              <div class="info-view-icon" id="view-icon">📘</div>
+          <div id="info-view" class="info-card-v2">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+              <button id="edit-info-btn" class="btn btn-secondary">✏️ Sửa thông tin</button>
+            </div>
+            <div class="info-cols">
               <div>
-                <div class="info-view-title" id="view-title">—</div>
-                <div class="info-view-sub" id="view-instructor">—</div>
+                <div class="info-section">
+                  <div class="info-section-label">Mô tả</div>
+                  <div id="view-description">—</div>
+                </div>
+                <div class="info-section">
+                  <div class="info-section-label">Mục tiêu học tập</div>
+                  <ul id="view-objectives"></ul>
+                </div>
               </div>
-              <button id="edit-info-btn" class="btn btn-secondary" style="margin-left:auto;">✏️ Sửa thông tin</button>
+              <div class="info-side-card">
+                <div class="info-section-label" style="margin-bottom:12px;">Thông tin khoá học</div>
+                <div class="info-side-item"><span class="info-grid-label">Lĩnh vực</span><span class="value" id="view-category">—</span></div>
+                <div class="info-side-item"><span class="info-grid-label">Cấp độ</span><span class="value" id="view-level">—</span></div>
+                <div class="info-side-item"><span class="info-grid-label">Phòng ban phụ trách</span><span class="value" id="view-department">—</span></div>
+                <div class="info-side-item"><span class="info-grid-label">Ngày bắt đầu</span><span class="value" id="view-start">—</span></div>
+                <div class="info-side-item"><span class="info-grid-label">Ngày kết thúc</span><span class="value" id="view-end">—</span></div>
+              </div>
             </div>
-            <div class="info-badges" id="view-badges"></div>
-            <div class="info-section">
-              <div class="info-section-label">Mô tả</div>
-              <div id="view-description">—</div>
-            </div>
-            <div class="info-section">
-              <div class="info-section-label">Mục tiêu học tập</div>
-              <ul id="view-objectives"></ul>
-            </div>
-            <div class="info-grid">
-              <div><span class="info-grid-label">Lĩnh vực</span><span id="view-category">—</span></div>
-              <div><span class="info-grid-label">Cấp độ</span><span id="view-level">—</span></div>
-              <div><span class="info-grid-label">Phòng ban phụ trách</span><span id="view-department">—</span></div>
-              <div><span class="info-grid-label">Ngày bắt đầu</span><span id="view-start">—</span></div>
-              <div><span class="info-grid-label">Ngày kết thúc</span><span id="view-end">—</span></div>
+
+            <!-- Giữ các phần tử gốc để js/courseEdit.js không cần chỉnh sửa -->
+            <div class="hidden">
+              <div class="info-view-icon" id="view-icon">📘</div>
+              <div class="info-view-title" id="view-title">—</div>
+              <div class="info-view-sub" id="view-instructor">—</div>
+              <div class="info-badges" id="view-badges"></div>
             </div>
           </div>
 
