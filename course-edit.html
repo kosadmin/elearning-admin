@@ -39,7 +39,12 @@
 
     <div class="main-area">
       <header class="topbar-fixed">
-        <h2 class="topbar-title" id="page-title">Chi tiết khoá học</h2>
+        <div class="topbar-title-row">
+          <a href="courses.html" class="topbar-back" title="Về danh sách khoá học">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+          <h2 class="topbar-title" id="page-title">Chi tiết khoá học</h2>
+        </div>
         <div class="topbar-user">
           <div class="avatar-circle" id="topbar-avatar">A</div>
           <div>
@@ -50,11 +55,6 @@
       </header>
 
       <main class="content">
-        <a href="courses.html" class="back-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Về danh sách khoá học
-        </a>
-
         <!-- HERO: ảnh minh hoạ + tên khoá học + badge (đồng bộ dữ liệu với tab Thông tin bên dưới, điền bởi js/courseEdit.js) -->
         <div class="detail-hero">
           <div class="detail-hero-cover cover-0" id="hero-cover">📘</div>
@@ -63,6 +63,7 @@
             <p class="detail-hero-sub" id="hero-instructor">—</p>
             <div class="detail-hero-badges" id="hero-badges"></div>
           </div>
+          <button id="edit-info-btn" class="btn btn-secondary detail-hero-action">✏️ Sửa thông tin</button>
         </div>
 
         <div class="tabs-row" id="course-tabs">
@@ -75,9 +76,6 @@
         <!-- TAB: THÔNG TIN -->
         <div class="tab-panel" data-tab-panel="info">
           <div id="info-view" class="info-card-v2">
-            <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-              <button id="edit-info-btn" class="btn btn-secondary">✏️ Sửa thông tin</button>
-            </div>
             <div class="info-cols">
               <div>
                 <div class="info-section">
@@ -91,11 +89,13 @@
               </div>
               <div class="info-side-card">
                 <div class="info-section-label" style="margin-bottom:12px;">Thông tin khoá học</div>
-                <div class="info-side-item"><span class="info-grid-label">Lĩnh vực</span><span class="value" id="view-category">—</span></div>
-                <div class="info-side-item"><span class="info-grid-label">Cấp độ</span><span class="value" id="view-level">—</span></div>
-                <div class="info-side-item"><span class="info-grid-label">Phòng ban phụ trách</span><span class="value" id="view-department">—</span></div>
-                <div class="info-side-item"><span class="info-grid-label">Ngày bắt đầu</span><span class="value" id="view-start">—</span></div>
-                <div class="info-side-item"><span class="info-grid-label">Ngày kết thúc</span><span class="value" id="view-end">—</span></div>
+                <div class="info-side-grid">
+                  <div class="info-side-item"><span class="info-grid-label">Lĩnh vực</span><span class="value" id="view-category">—</span></div>
+                  <div class="info-side-item"><span class="info-grid-label">Cấp độ</span><span class="value" id="view-level">—</span></div>
+                  <div class="info-side-item"><span class="info-grid-label">Phòng ban phụ trách</span><span class="value" id="view-department">—</span></div>
+                  <div class="info-side-item"><span class="info-grid-label">Ngày bắt đầu</span><span class="value" id="view-start">—</span></div>
+                  <div class="info-side-item"><span class="info-grid-label">Ngày kết thúc</span><span class="value" id="view-end">—</span></div>
+                </div>
               </div>
             </div>
 
@@ -180,8 +180,7 @@
 
         <!-- TAB: BÀI HỌC -->
         <div class="tab-panel hidden" data-tab-panel="lessons">
-          <div class="table-header" style="padding:0 0 14px;">
-            <span class="card-title" style="margin:0;">Danh sách bài học</span>
+          <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
             <button id="add-lesson-btn" class="btn btn-primary">+ Thêm bài học</button>
           </div>
           <div id="lessons-list"></div>
@@ -191,22 +190,19 @@
         <div class="tab-panel hidden" data-tab-panel="assign">
           <div class="card" style="margin-bottom:18px;">
             <p class="card-title">Gán theo phòng ban / chức danh</p>
+            <p class="multi-select-hint">Chỉ nhân sự thuộc <strong>đồng thời</strong> (các) phòng ban và (các) chức danh đã chọn bên dưới mới được gán. Chọn xong cả 2 mục rồi mới bấm Gán.</p>
             <div class="form-grid">
               <div>
-                <label class="field-label">Phòng ban</label>
-                <div class="password-row">
-                  <select id="assign-department" class="field-input"></select>
-                  <button id="assign-department-btn" class="btn btn-secondary">Gán cả phòng ban</button>
-                </div>
+                <label class="field-label">Phòng ban (chọn nhiều)</label>
+                <div class="multi-select-box" id="assign-department-list"></div>
               </div>
               <div>
-                <label class="field-label">Chức danh</label>
-                <div class="password-row">
-                  <select id="assign-position" class="field-input"></select>
-                  <button id="assign-position-btn" class="btn btn-secondary">Gán cả chức danh</button>
-                </div>
+                <label class="field-label">Chức danh (chọn nhiều)</label>
+                <div class="multi-select-box" id="assign-position-list"></div>
               </div>
             </div>
+            <button id="assign-combo-btn" class="btn btn-primary" style="margin-top:14px;" disabled>Gán học viên phù hợp</button>
+            <p id="assign-combo-msg" class="field-hint"></p>
           </div>
 
           <div class="card" style="margin-bottom:18px;">

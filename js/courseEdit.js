@@ -4,9 +4,9 @@ import { initTabs } from './tabs.js';
 const ICON_CHOICES = ['📘','💼','📊','🎯','🛠️','📈','🧾','🧠','✅','📋','⚖️','🔒','💡','🗂️'];
 const ICON_EDIT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
 const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
-const ICON_UP = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`;
-const ICON_DOWN = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+const ICON_GRIP = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>`;
 const TYPE_LABELS = { video: 'Video', pdf: 'PDF', doc: 'Văn bản', image: 'Hình ảnh', sheet: 'Bảng tính', ppt: 'Trình chiếu' };
+const TYPE_CLASSES = { video: 'type-video', pdf: 'type-pdf', doc: 'type-doc', image: 'type-image', sheet: 'type-sheet', ppt: 'type-ppt' };
 const COVER_CLASSES = ['cover-0', 'cover-1', 'cover-2', 'cover-3'];
 
 let courseId = null;
@@ -81,11 +81,11 @@ function renderView(data) {
   document.getElementById('view-description').textContent = data.description || 'Chưa có mô tả cho khoá học này.';
   document.getElementById('view-badges').innerHTML = badgesHtml;
 
-  // Hero header mới ở đầu trang
+  // Hero header ở đầu trang
   const heroCover = document.getElementById('hero-cover');
   if (heroCover) {
     heroCover.textContent = data.icon || '📘';
-    heroCover.className = 'detail-hero-cover ' + COVER_CLASSES[(courseIdHash(courseId)) % COVER_CLASSES.length];
+    heroCover.className = 'detail-hero-cover ' + COVER_CLASSES[courseIdHash(courseId) % COVER_CLASSES.length];
   }
   const heroTitle = document.getElementById('hero-title');
   if (heroTitle) heroTitle.textContent = data.title;
@@ -113,7 +113,7 @@ function buildBadgesHtml(data) {
   return badges.join('');
 }
 
-// Băm chuỗi id đơn giản chỉ để chọn ổn định 1 trong 4 tông màu bìa cho mỗi khoá học
+// Băm chuỗi id đơn giản chỉ để chọn ổn định 1 trong 4 tông màu icon cho mỗi khoá học
 function courseIdHash(id) {
   let hash = 0;
   const str = String(id || '');
@@ -138,6 +138,8 @@ function fillEditForm(data) {
 
 function wireInfoToggle() {
   document.getElementById('edit-info-btn').addEventListener('click', () => {
+    // Nút nằm ở khối hero (hiện xuyên suốt các tab) nên phải tự chuyển về tab Thông tin trước
+    document.querySelector('#course-tabs [data-tab="info"]')?.click();
     document.getElementById('info-view').classList.add('hidden');
     document.getElementById('info-edit').classList.remove('hidden');
   });
@@ -203,8 +205,6 @@ function wireLessonModal() {
     const btn = e.target.closest('button');
     if (!btn) return;
     const id = btn.dataset.id;
-    if (btn.dataset.up) await moveLesson(id, -1);
-    if (btn.dataset.down) await moveLesson(id, 1);
     if (btn.dataset.edit) openLessonModal(id);
     if (btn.dataset.delete) await deleteLesson(id);
   });
@@ -244,29 +244,59 @@ async function loadLessons() {
   if (!lessonsCache.length) { wrap.innerHTML = `<div class="empty-illustration"><div class="icon">🎬</div><p>Chưa có bài học nào.</p></div>`; return; }
 
   wrap.innerHTML = lessonsCache.map((l, idx) => `
-    <div class="lesson-row">
+    <div class="lesson-row" draggable="true" data-id="${l.id}">
+      <span class="lesson-drag-handle" title="Kéo để sắp xếp lại">${ICON_GRIP}</span>
       <span class="lesson-order">${idx + 1}</span>
-      <span class="badge badge-neutral">${TYPE_LABELS[l.type] || l.type}</span>
+      <span class="lesson-type-col"><span class="lesson-type-badge ${TYPE_CLASSES[l.type] || 'type-doc'}">${TYPE_LABELS[l.type] || l.type}</span></span>
       <span class="lesson-title">${escapeHtml(l.title)}</span>
       <div class="lesson-actions">
-        <button data-id="${l.id}" data-up="1" ${idx === 0 ? 'disabled' : ''} title="Lên">${ICON_UP}</button>
-        <button data-id="${l.id}" data-down="1" ${idx === lessonsCache.length - 1 ? 'disabled' : ''} title="Xuống">${ICON_DOWN}</button>
         <button class="icon-btn edit" data-id="${l.id}" data-edit="1" title="Sửa">${ICON_EDIT}</button>
         <button class="icon-btn delete" data-id="${l.id}" data-delete="1" title="Xoá">${ICON_TRASH}</button>
       </div>
     </div>
   `).join('');
+
+  attachDragEvents(wrap);
 }
 
-async function moveLesson(id, direction) {
-  const idx = lessonsCache.findIndex(l => String(l.id) === String(id));
-  const swapIdx = idx + direction;
-  if (swapIdx < 0 || swapIdx >= lessonsCache.length) return;
-  const a = lessonsCache[idx], b = lessonsCache[swapIdx];
-  await Promise.all([
-    supabase.from('lessons').update({ sort_order: b.sort_order }).eq('id', a.id),
-    supabase.from('lessons').update({ sort_order: a.sort_order }).eq('id', b.id),
-  ]);
+function attachDragEvents(wrap) {
+  let draggingEl = null;
+
+  wrap.querySelectorAll('.lesson-row').forEach((row) => {
+    row.addEventListener('dragstart', () => {
+      draggingEl = row;
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      draggingEl = null;
+    });
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (!draggingEl || draggingEl === row) return;
+      const rect = row.getBoundingClientRect();
+      const isBefore = (e.clientY - rect.top) < rect.height / 2;
+      wrap.insertBefore(draggingEl, isBefore ? row : row.nextSibling);
+    });
+  });
+
+  wrap.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    if (!draggingEl) return;
+    const newOrderIds = [...wrap.querySelectorAll('.lesson-row')].map((r) => r.dataset.id);
+    await persistLessonOrder(newOrderIds);
+  });
+}
+
+async function persistLessonOrder(orderedIds) {
+  // Chỉ lưu lại nếu thứ tự thực sự thay đổi
+  const oldOrderIds = lessonsCache.map((l) => String(l.id));
+  const sameOrder = oldOrderIds.length === orderedIds.length && oldOrderIds.every((id, i) => id === orderedIds[i]);
+  if (sameOrder) return;
+
+  await Promise.all(orderedIds.map((id, idx) =>
+    supabase.from('lessons').update({ sort_order: idx + 1 }).eq('id', id)
+  ));
   await loadLessons();
 }
 
@@ -334,13 +364,26 @@ async function loadAssignLookups() {
     supabase.from('departments').select('id, name').eq('is_active', true).order('name'),
     supabase.from('positions').select('id, name').eq('is_active', true).order('name'),
   ]);
-  document.getElementById('assign-department').innerHTML = (depRes.data || []).map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
-  document.getElementById('assign-position').innerHTML = (posRes.data || []).map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+
+  const depList = document.getElementById('assign-department-list');
+  const posList = document.getElementById('assign-position-list');
+
+  depList.innerHTML = (depRes.data || []).length
+    ? (depRes.data || []).map(checkboxRow).join('')
+    : '<p class="field-hint">Chưa có phòng ban nào.</p>';
+  posList.innerHTML = (posRes.data || []).length
+    ? (posRes.data || []).map(checkboxRow).join('')
+    : '<p class="field-hint">Chưa có chức danh nào.</p>';
+}
+
+function checkboxRow(item) {
+  return `<label><input type="checkbox" value="${item.id}" /> ${escapeHtml(item.name)}</label>`;
 }
 
 function wireAssignActions() {
-  document.getElementById('assign-department-btn').addEventListener('click', () => bulkAssignBy('department_id', document.getElementById('assign-department').value));
-  document.getElementById('assign-position-btn').addEventListener('click', () => bulkAssignBy('position_id', document.getElementById('assign-position').value));
+  document.getElementById('assign-department-list').addEventListener('change', updateAssignComboState);
+  document.getElementById('assign-position-list').addEventListener('change', updateAssignComboState);
+  document.getElementById('assign-combo-btn').addEventListener('click', assignByDeptAndPosition);
 
   document.getElementById('assign-search').addEventListener('input', debounce(searchUsersForAssign, 350));
   document.getElementById('assign-selected-btn').addEventListener('click', assignSelectedUsers);
@@ -356,10 +399,33 @@ function wireAssignActions() {
   });
 }
 
-async function bulkAssignBy(column, value) {
-  if (!value) { alert('Vui lòng chọn giá trị.'); return; }
-  const { data: users } = await supabase.from('profiles').select('id').eq(column, value).eq('is_active', true);
-  await insertAssignments((users || []).map(u => u.id));
+function getCheckedValues(containerId) {
+  return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map((cb) => cb.value);
+}
+
+function updateAssignComboState() {
+  const deptCount = getCheckedValues('assign-department-list').length;
+  const posCount = getCheckedValues('assign-position-list').length;
+  document.getElementById('assign-combo-btn').disabled = !(deptCount && posCount);
+}
+
+async function assignByDeptAndPosition() {
+  const msg = document.getElementById('assign-combo-msg');
+  const deptIds = getCheckedValues('assign-department-list');
+  const posIds = getCheckedValues('assign-position-list');
+  if (!deptIds.length || !posIds.length) return;
+
+  msg.textContent = 'Đang gán...';
+  const { data: users, error } = await supabase
+    .from('profiles')
+    .select('id')
+    .in('department_id', deptIds)
+    .in('position_id', posIds)
+    .eq('is_active', true);
+
+  if (error) { msg.textContent = `Lỗi: ${error.message}`; return; }
+  await insertAssignments((users || []).map((u) => u.id));
+  msg.textContent = '';
 }
 
 async function searchUsersForAssign() {
