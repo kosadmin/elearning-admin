@@ -253,7 +253,7 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .cover-3 { background: linear-gradient(135deg, #C9F5D9, #22C55E); }
 
 .course-card-badges-row { display: flex; gap: 6px; flex-wrap: wrap; }
-.course-card-divider { height: 1px; background: var(--border); }
+.course-card-divider { height: 1px; background: var(--border); margin-top: auto; }
 .course-card-footer-v2 { display: flex; align-items: center; justify-content: space-between; }
 .course-card-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
 
@@ -314,15 +314,27 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .type-sheet { background: #DCFCE7; color: #16A34A; }
 .type-ppt { background: #FFEDD5; color: #EA580C; }
 
-/* ----- Assign tab: multi-select checkbox boxes ----- */
-.multi-select-box {
-  border: 1px solid var(--border); border-radius: 12px; padding: 6px 14px;
-  max-height: 168px; overflow-y: auto; background: var(--card-bg);
+/* ----- Assign tab: dropdown chọn nhiều (đóng gọn, mở panel khi bấm) ----- */
+.dropdown-select { position: relative; }
+.dropdown-select-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 11px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg);
+  font-size: 13.5px; color: var(--text); cursor: pointer; text-align: left;
 }
-.multi-select-box label {
-  display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 13px; cursor: pointer;
+.dropdown-select-trigger:hover { border-color: var(--primary-light); }
+.dropdown-select-trigger svg { flex-shrink: 0; color: var(--text-muted); }
+.dropdown-select-summary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-select-summary-muted { color: var(--text-muted); }
+.dropdown-select-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 20;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 6px 14px; max-height: 220px; overflow-y: auto;
 }
-.multi-select-box label:not(:last-child) { border-bottom: 1px solid var(--border); }
+.dropdown-select-panel.hidden { display: none; }
+.dropdown-select-panel label {
+  display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 13px; cursor: pointer;
+}
+.dropdown-select-panel label:not(:last-child) { border-bottom: 1px solid var(--border); }
 .multi-select-hint { font-size: 12px; color: var(--text-muted); margin: -8px 0 14px; }
 
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }

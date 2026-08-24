@@ -194,11 +194,23 @@
             <div class="form-grid">
               <div>
                 <label class="field-label">Phòng ban (chọn nhiều)</label>
-                <div class="multi-select-box" id="assign-department-list"></div>
+                <div class="dropdown-select" id="assign-department-dropdown">
+                  <button type="button" class="dropdown-select-trigger" id="assign-department-trigger">
+                    <span class="dropdown-select-summary dropdown-select-summary-muted" id="assign-department-summary">Chọn phòng ban...</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="dropdown-select-panel hidden" id="assign-department-panel"></div>
+                </div>
               </div>
               <div>
                 <label class="field-label">Chức danh (chọn nhiều)</label>
-                <div class="multi-select-box" id="assign-position-list"></div>
+                <div class="dropdown-select" id="assign-position-dropdown">
+                  <button type="button" class="dropdown-select-trigger" id="assign-position-trigger">
+                    <span class="dropdown-select-summary dropdown-select-summary-muted" id="assign-position-summary">Chọn chức danh...</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="dropdown-select-panel hidden" id="assign-position-panel"></div>
+                </div>
               </div>
             </div>
             <button id="assign-combo-btn" class="btn btn-primary" style="margin-top:14px;" disabled>Gán học viên phù hợp</button>

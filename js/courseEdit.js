@@ -14,6 +14,8 @@ let currentCourse = null;
 let lessonsCache = [];
 let editingLessonId = null;
 let selectedNewUserIds = new Set();
+let departmentOptions = [];
+let positionOptions = [];
 
 export async function initCourseEditPage() {
   const params = new URLSearchParams(location.search);
@@ -364,15 +366,14 @@ async function loadAssignLookups() {
     supabase.from('departments').select('id, name').eq('is_active', true).order('name'),
     supabase.from('positions').select('id, name').eq('is_active', true).order('name'),
   ]);
+  departmentOptions = depRes.data || [];
+  positionOptions = posRes.data || [];
 
-  const depList = document.getElementById('assign-department-list');
-  const posList = document.getElementById('assign-position-list');
-
-  depList.innerHTML = (depRes.data || []).length
-    ? (depRes.data || []).map(checkboxRow).join('')
+  document.getElementById('assign-department-panel').innerHTML = departmentOptions.length
+    ? departmentOptions.map(checkboxRow).join('')
     : '<p class="field-hint">Chưa có phòng ban nào.</p>';
-  posList.innerHTML = (posRes.data || []).length
-    ? (posRes.data || []).map(checkboxRow).join('')
+  document.getElementById('assign-position-panel').innerHTML = positionOptions.length
+    ? positionOptions.map(checkboxRow).join('')
     : '<p class="field-hint">Chưa có chức danh nào.</p>';
 }
 
@@ -381,8 +382,20 @@ function checkboxRow(item) {
 }
 
 function wireAssignActions() {
-  document.getElementById('assign-department-list').addEventListener('change', updateAssignComboState);
-  document.getElementById('assign-position-list').addEventListener('change', updateAssignComboState);
+  setupDropdown('assign-department-trigger', 'assign-department-panel');
+  setupDropdown('assign-position-trigger', 'assign-position-panel');
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown-select')) closeAllDropdowns();
+  });
+
+  document.getElementById('assign-department-panel').addEventListener('change', () => {
+    updateDropdownSummary('assign-department-panel', 'assign-department-summary', departmentOptions, 'Chọn phòng ban...');
+    updateAssignComboState();
+  });
+  document.getElementById('assign-position-panel').addEventListener('change', () => {
+    updateDropdownSummary('assign-position-panel', 'assign-position-summary', positionOptions, 'Chọn chức danh...');
+    updateAssignComboState();
+  });
   document.getElementById('assign-combo-btn').addEventListener('click', assignByDeptAndPosition);
 
   document.getElementById('assign-search').addEventListener('input', debounce(searchUsersForAssign, 350));
@@ -399,20 +412,49 @@ function wireAssignActions() {
   });
 }
 
+// Dropdown chọn-nhiều: bấm để mở/đóng panel, đóng khi bấm ra ngoài
+function setupDropdown(triggerId, panelId) {
+  const trigger = document.getElementById(triggerId);
+  const panel = document.getElementById(panelId);
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !panel.classList.contains('hidden');
+    closeAllDropdowns();
+    if (!isOpen) panel.classList.remove('hidden');
+  });
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown-select-panel').forEach((p) => p.classList.add('hidden'));
+}
+
+function updateDropdownSummary(panelId, summaryId, options, placeholder) {
+  const checkedIds = new Set(getCheckedValues(panelId));
+  const summaryEl = document.getElementById(summaryId);
+  if (!checkedIds.size) {
+    summaryEl.textContent = placeholder;
+    summaryEl.classList.add('dropdown-select-summary-muted');
+    return;
+  }
+  summaryEl.classList.remove('dropdown-select-summary-muted');
+  const names = options.filter((o) => checkedIds.has(String(o.id))).map((o) => o.name);
+  summaryEl.textContent = names.length <= 2 ? names.join(', ') : `${names[0]} +${names.length - 1} khác`;
+}
+
 function getCheckedValues(containerId) {
   return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map((cb) => cb.value);
 }
 
 function updateAssignComboState() {
-  const deptCount = getCheckedValues('assign-department-list').length;
-  const posCount = getCheckedValues('assign-position-list').length;
+  const deptCount = getCheckedValues('assign-department-panel').length;
+  const posCount = getCheckedValues('assign-position-panel').length;
   document.getElementById('assign-combo-btn').disabled = !(deptCount && posCount);
 }
 
 async function assignByDeptAndPosition() {
   const msg = document.getElementById('assign-combo-msg');
-  const deptIds = getCheckedValues('assign-department-list');
-  const posIds = getCheckedValues('assign-position-list');
+  const deptIds = getCheckedValues('assign-department-panel');
+  const posIds = getCheckedValues('assign-position-panel');
   if (!deptIds.length || !posIds.length) return;
 
   msg.textContent = 'Đang gán...';
