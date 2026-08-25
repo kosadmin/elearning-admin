@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Chi tiết bài kiểm tra - E-Learning Admin</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-title">🎓 E-Learning Admin</div>
+      <ul>
+        <li><a href="index.html" data-page="index.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M9 21V12h6v9"/><path d="M5 10v11h14V10"/></svg>
+          Trang chủ
+        </a></li>
+        <li><a href="system-config.html" data-page="system-config.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15 1.65 1.65 0 0 0 3 14H2.91a2 2 0 0 1 0-4H3a1.65 1.65 0 0 0 1.65-1H4.68A1.65 1.65 0 0 0 4.35 6.18l-.06-.06A2 2 0 1 1 7.12 3.3l.06.06A1.65 1.65 0 0 0 9 3.68 1.65 1.65 0 0 0 10 2h.09a2 2 0 0 1 4 0V2c0 .61.36 1.16.94 1.4a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.24.58.79.94 1.4.94H21a2 2 0 0 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"/></svg>
+          Cấu hình hệ thống
+        </a></li>
+        <li><a href="students.html" data-page="students.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Quản trị người dùng
+        </a></li>
+        <li><a href="courses.html" data-page="courses.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Khoá học
+        </a></li>
+        <li><a href="quizzes.html" data-page="quizzes.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+          Kiểm tra & Bài thi
+        </a></li>
+      </ul>
+      <button id="logout-btn" class="logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Đăng xuất
+      </button>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar-fixed">
+        <div class="topbar-title-row">
+          <a href="quizzes.html" class="topbar-back" title="Về danh sách bài kiểm tra">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+          <h2 class="topbar-title" id="page-title">Chi tiết bài kiểm tra</h2>
+        </div>
+        <div class="topbar-user">
+          <div class="avatar-circle" id="topbar-avatar">A</div>
+          <div>
+            <div class="topbar-user-name" id="topbar-user-name">—</div>
+            <div class="topbar-user-role">Quản trị viên</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- HERO -->
+        <div class="detail-hero">
+          <div class="detail-hero-cover cover-0" id="hero-cover">📝</div>
+          <div class="detail-hero-body">
+            <h1 class="detail-hero-title" id="hero-title">—</h1>
+            <p class="detail-hero-sub" id="hero-sub">—</p>
+            <div class="detail-hero-badges" id="hero-badges"></div>
+          </div>
+          <button id="edit-info-btn" class="btn btn-secondary detail-hero-action">✏️ Sửa thông tin</button>
+        </div>
+
+        <div class="tabs-row" id="quiz-tabs">
+          <button class="tab-item active" data-tab="info">Thông tin</button>
+          <button class="tab-item" data-tab="questions">Câu hỏi</button>
+          <button class="tab-item" data-tab="assign">Phân quyền</button>
+          <button class="tab-item" data-tab="results">Kết quả</button>
+        </div>
+
+        <!-- TAB: THÔNG TIN -->
+        <div class="tab-panel" data-tab-panel="info">
+          <div id="info-view" class="info-card-v2">
+            <div class="info-section-label" style="margin-bottom:14px;">Thông tin bài kiểm tra</div>
+            <div class="info-side-grid">
+              <div class="info-side-item"><span class="info-grid-label">Khoá học liên kết</span><span class="value" id="view-course">—</span></div>
+              <div class="info-side-item"><span class="info-grid-label">Thời gian làm bài</span><span class="value" id="view-time">—</span></div>
+              <div class="info-side-item"><span class="info-grid-label">Cho phép làm lại</span><span class="value" id="view-retake">—</span></div>
+              <div class="info-side-item"><span class="info-grid-label">Số lần làm tối đa</span><span class="value" id="view-max-attempts">—</span></div>
+              <div class="info-side-item"><span class="info-grid-label">Điểm đạt</span><span class="value" id="view-passing">—</span></div>
+              <div class="info-side-item"><span class="info-grid-label">Hạn nộp</span><span class="value" id="view-due">—</span></div>
+            </div>
+          </div>
+
+          <div id="info-edit" class="card hidden" style="max-width:560px;">
+            <form id="quiz-info-form">
+              <div class="form-grid">
+                <div class="full-width">
+                  <label class="field-label">Tên bài kiểm tra *</label>
+                  <input id="q-title" class="field-input" type="text" required />
+                </div>
+                <div class="full-width">
+                  <label class="field-label">Gắn với khoá học</label>
+                  <select id="q-course" class="field-input">
+                    <option value="">-- Bài thi độc lập (không gắn khoá học) --</option>
+                  </select>
+                  <p class="field-hint">Bài thi gắn khoá học sẽ tự động hiển thị cho học viên đã được gán khoá học đó — không cần phân quyền riêng.</p>
+                </div>
+                <div>
+                  <label class="field-label">Thời gian làm bài (phút) *</label>
+                  <input id="q-time" class="field-input" type="number" min="1" required />
+                </div>
+                <div>
+                  <label class="field-label">Điểm đạt</label>
+                  <input id="q-passing" class="field-input" type="number" min="0" placeholder="Không yêu cầu" />
+                </div>
+                <div>
+                  <label class="field-label">Số lần làm tối đa</label>
+                  <input id="q-max-attempts" class="field-input" type="number" min="1" placeholder="Không giới hạn" />
+                </div>
+                <div>
+                  <label class="field-label">Hạn nộp</label>
+                  <input id="q-due" class="field-input" type="datetime-local" />
+                </div>
+              </div>
+              <div class="switch-row">
+                <label class="switch"><input type="checkbox" id="q-retake" /><span class="slider"></span></label>
+                <span>Cho phép làm lại</span>
+              </div>
+              <div class="modal-actions" style="justify-content:flex-start;">
+                <button type="button" id="cancel-edit-info-btn" class="btn btn-secondary">Huỷ</button>
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+              </div>
+              <p id="info-msg" class="field-hint"></p>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB: CÂU HỎI -->
+        <div class="tab-panel hidden" data-tab-panel="questions">
+          <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+            <button id="add-question-btn" class="btn btn-primary">+ Thêm câu hỏi</button>
+          </div>
+          <div id="questions-list"></div>
+        </div>
+
+        <!-- TAB: PHÂN QUYỀN -->
+        <div class="tab-panel hidden" data-tab-panel="assign">
+          <div id="assign-course-note" class="callout hidden">
+            Bài kiểm tra này đang gắn với một khoá học nên được <strong>tự động gán</strong> cho tất cả học viên đã được gán khoá học đó.
+            Không cần phân quyền riêng ở đây — muốn thay đổi ai được làm bài, hãy chỉnh phân quyền ở khoá học liên kết.
+            <br />
+            <a id="assign-course-link" href="#">Xem phân quyền của khoá học liên kết →</a>
+          </div>
+
+          <div id="assign-standalone-block">
+            <div class="card" style="margin-bottom:18px;">
+              <p class="card-title">Gán theo phòng ban / chức danh</p>
+              <p class="multi-select-hint">Chỉ nhân sự thuộc <strong>đồng thời</strong> (các) phòng ban và (các) chức danh đã chọn bên dưới mới được gán. Chọn xong cả 2 mục rồi mới bấm Gán.</p>
+              <div class="form-grid">
+                <div>
+                  <label class="field-label">Phòng ban (chọn nhiều)</label>
+                  <div class="dropdown-select" id="qassign-department-dropdown">
+                    <button type="button" class="dropdown-select-trigger" id="qassign-department-trigger">
+                      <span class="dropdown-select-summary dropdown-select-summary-muted" id="qassign-department-summary">Chọn phòng ban...</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-select-panel hidden" id="qassign-department-panel"></div>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label">Chức danh (chọn nhiều)</label>
+                  <div class="dropdown-select" id="qassign-position-dropdown">
+                    <button type="button" class="dropdown-select-trigger" id="qassign-position-trigger">
+                      <span class="dropdown-select-summary dropdown-select-summary-muted" id="qassign-position-summary">Chọn chức danh...</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-select-panel hidden" id="qassign-position-panel"></div>
+                  </div>
+                </div>
+              </div>
+              <button id="qassign-combo-btn" class="btn btn-primary" style="margin-top:14px;" disabled>Gán học viên phù hợp</button>
+              <p id="qassign-combo-msg" class="field-hint"></p>
+            </div>
+
+            <div class="card" style="margin-bottom:18px;">
+              <p class="card-title">Gán theo người dùng cụ thể</p>
+              <input id="qassign-search" class="field-input" type="text" placeholder="Tìm theo tên hoặc mã nhân sự..." />
+              <div id="qassign-search-results" style="margin-top:10px; max-height:220px; overflow-y:auto;"></div>
+              <button id="qassign-selected-btn" class="btn btn-primary" style="margin-top:12px;">Gán học viên đã chọn</button>
+            </div>
+
+            <div class="table-wrap">
+              <div class="table-header"><span class="card-title" style="margin:0;">Học viên đã được gán</span></div>
+              <div class="table-scroll">
+                <table>
+                  <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Phòng ban</th><th>Ngày gán</th><th>Thao tác</th></tr></thead>
+                  <tbody id="qassigned-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: KẾT QUẢ -->
+        <div class="tab-panel hidden" data-tab-panel="results">
+          <div class="stats-row">
+            <div class="stat-card blue">
+              <div class="stat-value" id="stat-total-attempts">0</div>
+              <div class="stat-label">Tổng lượt làm bài</div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-value" id="stat-distinct-users">0</div>
+              <div class="stat-label">Học viên đã làm</div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-value" id="stat-avg-score">—</div>
+              <div class="stat-label">Điểm trung bình</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-value" id="stat-pass-rate">—</div>
+              <div class="stat-label">Tỷ lệ đạt</div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Họ tên</th><th>Mã NV</th><th>Điểm</th><th>Thời gian làm</th><th>Ngày nộp</th></tr></thead>
+                <tbody id="attempts-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="question-modal" class="modal-overlay">
+    <div class="modal-box" style="width:520px;">
+      <h2 id="question-modal-title">Thêm câu hỏi</h2>
+      <form id="question-form">
+        <label class="field-label">Nội dung câu hỏi *</label>
+        <textarea id="qq-text" class="field-input" rows="2" required></textarea>
+
+        <label class="field-label">Đáp án (chọn nút tròn ở đáp án đúng) *</label>
+        <div id="qq-options-wrap"></div>
+        <button type="button" id="qq-add-option-btn" class="btn btn-secondary" style="margin-top:6px;">+ Thêm đáp án</button>
+
+        <label class="field-label">Điểm số</label>
+        <input id="qq-points" class="field-input" type="number" min="1" value="1" style="width:120px;" />
+
+        <label class="field-label">Giải thích (không bắt buộc)</label>
+        <textarea id="qq-explanation" class="field-input" rows="2"></textarea>
+
+        <div class="modal-actions">
+          <button type="button" id="question-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary" id="question-submit-btn">Lưu</button>
+        </div>
+        <p id="question-msg" class="field-hint"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAdmin } from './js/auth.js';
+    import { initQuizEditPage } from './js/quizEdit.js';
+    await requireAdmin();
+    initQuizEditPage();
+  </script>
+</body>
+</html>

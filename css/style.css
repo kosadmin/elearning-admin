@@ -338,3 +338,14 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .multi-select-hint { font-size: 12px; color: var(--text-muted); margin: -8px 0 14px; }
 
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ----- Question modal: option rows (tab Câu hỏi, module Kiểm tra & Bài thi) ----- */
+.option-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.option-row input[type="radio"] { flex-shrink: 0; width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+.option-row input[type="text"] { flex: 1; }
+.option-row button { flex-shrink: 0; margin: 0; }
+
+/* ----- Callout box (vd: ghi chú tab Phân quyền khi bài thi gắn khoá học) ----- */
+.callout { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.callout a { color: var(--primary-dark); font-weight: 700; text-decoration: none; }
+.callout a:hover { text-decoration: underline; }
