@@ -109,7 +109,7 @@
                   <label class="field-label">Điểm đạt</label>
                   <input id="q-passing" class="field-input" type="number" min="0" placeholder="Không yêu cầu" />
                 </div>
-                <div>
+                <div id="q-max-attempts-wrap" class="hidden">
                   <label class="field-label">Số lần làm tối đa</label>
                   <input id="q-max-attempts" class="field-input" type="number" min="1" placeholder="Không giới hạn" />
                 </div>
@@ -142,10 +142,7 @@
         <!-- TAB: PHÂN QUYỀN -->
         <div class="tab-panel hidden" data-tab-panel="assign">
           <div id="assign-course-note" class="callout hidden">
-            Bài kiểm tra này đang gắn với một khoá học nên được <strong>tự động gán</strong> cho tất cả học viên đã được gán khoá học đó.
-            Không cần phân quyền riêng ở đây — muốn thay đổi ai được làm bài, hãy chỉnh phân quyền ở khoá học liên kết.
-            <br />
-            <a id="assign-course-link" href="#">Xem phân quyền của khoá học liên kết →</a>
+            Bài kiểm tra đang gắn với một khoá học. Hãy thay đổi phân quyền ở <a id="assign-course-link" href="#">khoá học liên kết</a>.
           </div>
 
           <div id="assign-standalone-block">

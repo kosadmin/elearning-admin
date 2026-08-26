@@ -103,6 +103,12 @@ function fillEditForm(data) {
   document.getElementById('q-max-attempts').value = data.max_attempts ?? '';
   document.getElementById('q-passing').value = data.passing_score ?? '';
   document.getElementById('q-due').value = data.due_date ? toDatetimeLocalValue(data.due_date) : '';
+  toggleMaxAttemptsField();
+}
+
+function toggleMaxAttemptsField() {
+  const wrap = document.getElementById('q-max-attempts-wrap');
+  wrap.classList.toggle('hidden', !document.getElementById('q-retake').checked);
 }
 
 function toDatetimeLocalValue(iso) {
@@ -122,6 +128,7 @@ function wireInfoToggle() {
     document.getElementById('info-edit').classList.add('hidden');
     document.getElementById('info-view').classList.remove('hidden');
   });
+  document.getElementById('q-retake').addEventListener('change', toggleMaxAttemptsField);
 }
 
 function wireInfoForm() {
@@ -129,12 +136,13 @@ function wireInfoForm() {
     e.preventDefault();
     const msg = document.getElementById('info-msg');
 
+    const allowRetake = document.getElementById('q-retake').checked;
     const payload = {
       title: document.getElementById('q-title').value.trim(),
       course_id: document.getElementById('q-course').value || null,
       time_limit_minutes: parseInt(document.getElementById('q-time').value, 10) || 30,
-      allow_retake: document.getElementById('q-retake').checked,
-      max_attempts: document.getElementById('q-max-attempts').value ? parseInt(document.getElementById('q-max-attempts').value, 10) : null,
+      allow_retake: allowRetake,
+      max_attempts: (allowRetake && document.getElementById('q-max-attempts').value) ? parseInt(document.getElementById('q-max-attempts').value, 10) : null,
       passing_score: document.getElementById('q-passing').value ? parseInt(document.getElementById('q-passing').value, 10) : null,
       due_date: document.getElementById('q-due').value ? new Date(document.getElementById('q-due').value).toISOString() : null,
     };
