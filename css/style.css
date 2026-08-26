@@ -364,3 +364,34 @@ input.field-input:focus, select.field-input:focus, textarea.field-input:focus { 
 .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 .callout a { color: var(--primary-dark); font-weight: 700; text-decoration: none; }
 .callout a:hover { text-decoration: underline; }
+
+/* =====================================================================
+   DASHBOARD (index.html)
+   ===================================================================== */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; align-items: start; }
+@media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+.dash-chart-wrap { height: 240px; position: relative; }
+
+.leaderboard-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.leaderboard-row:last-child { border-bottom: none; padding-bottom: 0; }
+.leaderboard-rank {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: var(--surface); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 800;
+}
+.leaderboard-rank.top1 { background: #FEF3C7; color: #B45309; }
+.leaderboard-rank.top2 { background: #E5E7EB; color: #4B5563; }
+.leaderboard-rank.top3 { background: #FFE4D0; color: #C2410C; }
+.leaderboard-name { flex: 1; min-width: 0; }
+.leaderboard-name .name { font-size: 13.5px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard-name .sub { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
+.leaderboard-stat { text-align: right; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+.leaderboard-stat strong { display: block; font-size: 13.5px; color: var(--text); font-weight: 800; }
+
+.activity-row { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.activity-row:last-child { border-bottom: none; padding-bottom: 0; }
+.activity-icon { width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.activity-icon.lesson { background: #DBEAFE; color: #2563EB; }
+.activity-icon.quiz { background: #FFEDD5; color: #C2410C; }
+.activity-text { flex: 1; font-size: 13px; color: var(--text); line-height: 1.5; }
+.activity-time { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; padding-top: 2px; }
