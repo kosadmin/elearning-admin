@@ -101,9 +101,10 @@
         </div>
 
         <div class="tab-panel hidden" data-tab-panel="banner">
-          <div class="card">
-            <p class="field-hint">Quản lý banner (upload ảnh, gắn link/điều hướng) sẽ làm chi tiết ở giai đoạn sau khi tới phần Storage/upload file.</p>
+          <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+            <button id="banner-add-btn" class="btn btn-primary">+ Thêm banner</button>
           </div>
+          <div class="banner-grid" id="banner-grid"></div>
         </div>
 
         <div class="tab-panel hidden" data-tab-panel="general">
@@ -183,10 +184,36 @@
     </div>
   </div>
 
+  <div id="banner-modal" class="modal-overlay">
+    <div class="modal-box" style="width:420px;">
+      <h2 id="banner-modal-title">Thêm banner</h2>
+      <form id="banner-form">
+        <label class="field-label">Hình ảnh banner *</label>
+        <input id="banner-file" class="field-input" type="file" accept="image/*" />
+        <p class="field-hint" id="banner-current-hint"></p>
+
+        <label class="field-label">Liên kết khi bấm vào (không bắt buộc)</label>
+        <input id="banner-link" class="field-input" type="url" placeholder="https://..." />
+
+        <div class="switch-row">
+          <label class="switch"><input type="checkbox" id="banner-active" checked /><span class="slider"></span></label>
+          <span>Hiển thị banner này trên app</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="banner-cancel-btn" class="btn btn-secondary">Huỷ</button>
+          <button type="submit" class="btn btn-primary" id="banner-submit-btn">Lưu</button>
+        </div>
+        <p id="banner-msg" class="field-hint"></p>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { requireAdmin } from './js/auth.js';
     import { initCrudWithStatus } from './js/crudWithStatus.js';
     import { initTabs } from './js/tabs.js';
+    import { initBannerTab } from './js/banners.js';
     import { supabase } from './js/supabaseClient.js';
 
     await requireAdmin();
@@ -204,6 +231,8 @@
       tableName: 'course_categories', singularLabel: 'Lĩnh vực',
       ids: { tbodyId: 'cat-body', addBtnId: 'cat-add-btn', modalId: 'cat-modal', modalTitleId: 'cat-modal-title', formId: 'cat-form', nameInputId: 'cat-name-input', descInputId: 'cat-desc-input', statusInputId: 'cat-status-input', cancelBtnId: 'cat-cancel-btn' },
     });
+
+    initBannerTab();
 
     const hotlineInput = document.getElementById('hotline-input');
     const generalMsg = document.getElementById('general-msg');

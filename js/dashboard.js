@@ -161,18 +161,18 @@ async function renderQuizScoreChart() {
   quizChart = new Chart(canvas, buildQuizScoreConfig(rows, 6));
 }
 
-function buildQuizScoreConfig(rows, limit) {
+function buildQuizScoreConfig(rows, limit, big = false) {
   const visible = rows.slice(0, limit);
   return {
     type: 'bar',
     data: {
-      labels: visible.map((r) => (r.title.length > 20 ? r.title.slice(0, 20) + '…' : r.title)),
+      labels: visible.map((r) => (big ? wrapLabel(r.title) : (r.title.length > 20 ? r.title.slice(0, 20) + '…' : r.title))),
       datasets: [{
         label: 'Điểm trung bình',
         data: visible.map((r) => r.avg),
         backgroundColor: '#FF7A45',
         borderRadius: 6,
-        maxBarThickness: 30,
+        maxBarThickness: big ? 36 : 30,
       }],
     },
     options: {
@@ -185,13 +185,35 @@ function buildQuizScoreConfig(rows, limit) {
           color: '#fff',
           anchor: 'end',
           align: 'start',
-          font: { weight: '700', size: 11 },
+          font: { weight: '700', size: big ? 12 : 11 },
           formatter: (value) => `${value}đ`,
         },
       },
-      scales: { x: { min: 0, max: 100, ticks: { stepSize: 20 } } },
+      scales: {
+        x: { min: 0, max: 100, ticks: { stepSize: 20 } },
+        y: { ticks: { font: { size: big ? 12 : 11 }, autoSkip: false } },
+      },
     },
   };
+}
+
+// Bẻ tên bài kiểm tra dài thành nhiều dòng thay vì cắt "..." — dùng cho biểu đồ phóng to,
+// Chart.js hỗ trợ nhãn nhiều dòng khi truyền vào 1 mảng chuỗi.
+function wrapLabel(text, maxLen = 26) {
+  const words = String(text).split(' ');
+  const lines = [];
+  let current = '';
+  words.forEach((w) => {
+    const candidate = current ? `${current} ${w}` : w;
+    if (candidate.length > maxLen && current) {
+      lines.push(current);
+      current = w;
+    } else {
+      current = candidate;
+    }
+  });
+  if (current) lines.push(current);
+  return lines;
 }
 
 /* ============ Popup xem biểu đồ lớn ============ */
@@ -217,7 +239,7 @@ function openChartModal(type) {
     title = 'Phân bổ tiến độ học viên';
   } else {
     if (!quizRowsCache) return;
-    config = buildQuizScoreConfig(quizRowsCache, 15);
+    config = buildQuizScoreConfig(quizRowsCache, 15, true);
     title = 'Điểm trung bình theo bài kiểm tra';
   }
 
