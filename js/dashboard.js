@@ -3,6 +3,16 @@ import { supabase } from './supabaseClient.js';
 const ICON_LESSON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
 const ICON_QUIZ = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>`;
 
+if (window.Chart && window.ChartDataLabels) {
+  Chart.register(ChartDataLabels);
+}
+
+let progressChart = null;
+let quizChart = null;
+let modalChart = null;
+let progressStatsCache = null;
+let quizRowsCache = null;
+
 export async function initDashboardPage() {
   const [studentsRes, coursesRes, quizzesRes] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
@@ -15,12 +25,14 @@ export async function initDashboardPage() {
   document.getElementById('stat-quizzes').textContent = quizzesRes.count ?? 0;
 
   const progress = await computeProgressStats();
+  progressStatsCache = progress;
   document.getElementById('stat-completion-rate').textContent = progress.avgPercent != null ? `${progress.avgPercent}%` : '—';
 
   renderProgressChart(progress);
   await renderQuizScoreChart();
   await renderTopStudents();
   await renderRecentActivity();
+  wireChartExpand();
 }
 
 /* ============ Tính tiến độ tổng thể (dùng chung cho stat-card + biểu đồ donut) ============ */
@@ -73,19 +85,13 @@ async function computeProgressStats() {
   return { avgPercent, completed, inProgress, notStarted };
 }
 
-function renderProgressChart({ completed, inProgress, notStarted }) {
-  const canvas = document.getElementById('chart-progress');
-  if (!canvas) return;
-  if (!completed && !inProgress && !notStarted) {
-    canvas.closest('.dash-chart-wrap').innerHTML = '<p class="empty-text">Chưa có học viên nào được gán khoá học.</p>';
-    return;
-  }
-  new Chart(canvas, {
+function buildProgressConfig(stats) {
+  return {
     type: 'doughnut',
     data: {
       labels: ['Hoàn thành 100%', 'Đang học', 'Chưa bắt đầu'],
       datasets: [{
-        data: [completed, inProgress, notStarted],
+        data: [stats.completed, stats.inProgress, stats.notStarted],
         backgroundColor: ['#22C55E', '#FF7A45', '#E5E7EB'],
         borderWidth: 0,
       }],
@@ -94,9 +100,26 @@ function renderProgressChart({ completed, inProgress, notStarted }) {
       responsive: true,
       maintainAspectRatio: false,
       cutout: '68%',
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 11.5 } } } },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 11.5 } } },
+        datalabels: {
+          color: '#fff',
+          font: { weight: '700', size: 12 },
+          formatter: (value) => (value > 0 ? value : ''),
+        },
+      },
     },
-  });
+  };
+}
+
+function renderProgressChart(stats) {
+  const canvas = document.getElementById('chart-progress');
+  if (!canvas) return;
+  if (!stats.completed && !stats.inProgress && !stats.notStarted) {
+    canvas.closest('.dash-chart-wrap').innerHTML = '<p class="empty-text">Chưa có học viên nào được gán khoá học.</p>';
+    return;
+  }
+  progressChart = new Chart(canvas, buildProgressConfig(stats));
 }
 
 /* ============ Biểu đồ điểm trung bình theo bài kiểm tra ============ */
@@ -127,21 +150,26 @@ async function renderQuizScoreChart() {
       title: q.title,
       avg: Math.round(scoresByQuiz[q.id].reduce((s, v) => s + v, 0) / scoresByQuiz[q.id].length),
     }))
-    .sort((a, b) => b.avg - a.avg)
-    .slice(0, 6);
+    .sort((a, b) => b.avg - a.avg);
 
   if (!rows.length) {
     canvas.closest('.dash-chart-wrap').innerHTML = '<p class="empty-text">Chưa có lượt làm bài kiểm tra nào.</p>';
     return;
   }
 
-  new Chart(canvas, {
+  quizRowsCache = rows;
+  quizChart = new Chart(canvas, buildQuizScoreConfig(rows, 6));
+}
+
+function buildQuizScoreConfig(rows, limit) {
+  const visible = rows.slice(0, limit);
+  return {
     type: 'bar',
     data: {
-      labels: rows.map((r) => (r.title.length > 20 ? r.title.slice(0, 20) + '…' : r.title)),
+      labels: visible.map((r) => (r.title.length > 20 ? r.title.slice(0, 20) + '…' : r.title)),
       datasets: [{
         label: 'Điểm trung bình',
-        data: rows.map((r) => r.avg),
+        data: visible.map((r) => r.avg),
         backgroundColor: '#FF7A45',
         borderRadius: 6,
         maxBarThickness: 30,
@@ -151,10 +179,56 @@ async function renderQuizScoreChart() {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          color: '#fff',
+          anchor: 'end',
+          align: 'start',
+          font: { weight: '700', size: 11 },
+          formatter: (value) => `${value}đ`,
+        },
+      },
       scales: { x: { min: 0, max: 100, ticks: { stepSize: 20 } } },
     },
+  };
+}
+
+/* ============ Popup xem biểu đồ lớn ============ */
+
+function wireChartExpand() {
+  document.querySelectorAll('.chart-expand-btn').forEach((btn) => {
+    btn.addEventListener('click', () => openChartModal(btn.dataset.chart));
   });
+  document.getElementById('chart-modal-close').addEventListener('click', closeChartModal);
+  document.getElementById('chart-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'chart-modal') closeChartModal();
+  });
+}
+
+function openChartModal(type) {
+  const canvas = document.getElementById('chart-modal-canvas');
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
+
+  let config, title;
+  if (type === 'progress') {
+    if (!progressStatsCache) return;
+    config = buildProgressConfig(progressStatsCache);
+    title = 'Phân bổ tiến độ học viên';
+  } else {
+    if (!quizRowsCache) return;
+    config = buildQuizScoreConfig(quizRowsCache, 15);
+    title = 'Điểm trung bình theo bài kiểm tra';
+  }
+
+  document.getElementById('chart-modal-title').textContent = title;
+  document.getElementById('chart-modal').classList.add('open');
+  modalChart = new Chart(canvas, config);
+}
+
+function closeChartModal() {
+  document.getElementById('chart-modal').classList.remove('open');
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
 }
 
 /* ============ Top học viên ============ */
@@ -213,6 +287,8 @@ async function renderTopStudents() {
     scoresByUser[userId].push(score);
   });
 
+  // Xếp hạng: ưu tiên số khoá học đã hoàn thành 100% (giảm dần),
+  // nếu bằng nhau thì xét tiếp điểm kiểm tra trung bình (giảm dần).
   const ranked = students
     .map((s) => {
       const completedCourses = completedCoursesByUser[s.id] || 0;
