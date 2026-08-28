@@ -185,15 +185,46 @@
   </div>
 
   <div id="banner-modal" class="modal-overlay">
-    <div class="modal-box" style="width:420px;">
+    <div class="modal-box" style="width:460px;">
       <h2 id="banner-modal-title">Thêm banner</h2>
       <form id="banner-form">
         <label class="field-label">Hình ảnh banner *</label>
+        <img id="banner-current-image" class="hidden" style="width:100%; border-radius:12px; margin-bottom:10px;" />
+
+        <div id="banner-crop-wrap" class="hidden">
+          <div class="crop-viewport" id="banner-crop-viewport">
+            <img id="banner-crop-img" alt="" />
+          </div>
+          <div class="crop-zoom-row">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="range" id="banner-crop-zoom" min="1" max="3" step="0.01" value="1" />
+          </div>
+          <p class="field-hint">Kéo ảnh để chỉnh vị trí, dùng thanh trượt để phóng to/thu nhỏ. Khung đã đúng tỉ lệ hiển thị banner trên app (1.9:1).</p>
+        </div>
+
         <input id="banner-file" class="field-input" type="file" accept="image/*" />
         <p class="field-hint" id="banner-current-hint"></p>
 
-        <label class="field-label">Liên kết khi bấm vào (không bắt buộc)</label>
-        <input id="banner-link" class="field-input" type="url" placeholder="https://..." />
+        <label class="field-label">Điều hướng khi bấm vào banner</label>
+        <select id="banner-nav-type" class="field-input">
+          <option value="none">Không điều hướng</option>
+          <option value="url">Mở liên kết ngoài (URL)</option>
+          <option value="course">Mở khoá học có sẵn</option>
+          <option value="quiz">Mở bài kiểm tra có sẵn</option>
+        </select>
+
+        <div id="banner-url-field">
+          <label class="field-label">Đường dẫn URL</label>
+          <input id="banner-link" class="field-input" type="url" placeholder="https://..." />
+        </div>
+        <div id="banner-course-field" class="hidden">
+          <label class="field-label">Chọn khoá học</label>
+          <select id="banner-course-select" class="field-input"></select>
+        </div>
+        <div id="banner-quiz-field" class="hidden">
+          <label class="field-label">Chọn bài kiểm tra</label>
+          <select id="banner-quiz-select" class="field-input"></select>
+        </div>
 
         <div class="switch-row">
           <label class="switch"><input type="checkbox" id="banner-active" checked /><span class="slider"></span></label>
