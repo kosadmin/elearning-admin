@@ -205,25 +205,28 @@
         <input id="banner-file" class="field-input" type="file" accept="image/*" />
         <p class="field-hint" id="banner-current-hint"></p>
 
-        <label class="field-label">Điều hướng khi bấm vào banner</label>
-        <select id="banner-nav-type" class="field-input">
-          <option value="none">Không điều hướng</option>
-          <option value="url">Mở liên kết ngoài (URL)</option>
-          <option value="course">Mở khoá học có sẵn</option>
-          <option value="quiz">Mở bài kiểm tra có sẵn</option>
-        </select>
+        <!-- Điều hướng banner: tạm ẩn vì chưa dùng đến. Muốn bật lại, xoá class="hidden" ở div ngay dưới đây. -->
+        <div id="banner-nav-section" class="hidden">
+          <label class="field-label">Điều hướng khi bấm vào banner</label>
+          <select id="banner-nav-type" class="field-input">
+            <option value="none">Không điều hướng</option>
+            <option value="url">Mở liên kết ngoài (URL)</option>
+            <option value="course">Mở khoá học có sẵn</option>
+            <option value="quiz">Mở bài kiểm tra có sẵn</option>
+          </select>
 
-        <div id="banner-url-field">
-          <label class="field-label">Đường dẫn URL</label>
-          <input id="banner-link" class="field-input" type="url" placeholder="https://..." />
-        </div>
-        <div id="banner-course-field" class="hidden">
-          <label class="field-label">Chọn khoá học</label>
-          <select id="banner-course-select" class="field-input"></select>
-        </div>
-        <div id="banner-quiz-field" class="hidden">
-          <label class="field-label">Chọn bài kiểm tra</label>
-          <select id="banner-quiz-select" class="field-input"></select>
+          <div id="banner-url-field">
+            <label class="field-label">Đường dẫn URL</label>
+            <input id="banner-link" class="field-input" type="url" placeholder="https://..." />
+          </div>
+          <div id="banner-course-field" class="hidden">
+            <label class="field-label">Chọn khoá học</label>
+            <select id="banner-course-select" class="field-input"></select>
+          </div>
+          <div id="banner-quiz-field" class="hidden">
+            <label class="field-label">Chọn bài kiểm tra</label>
+            <select id="banner-quiz-select" class="field-input"></select>
+          </div>
         </div>
 
         <div class="switch-row">
