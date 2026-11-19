@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Quản trị người dùng - E-Learning Admin</title>
 <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -53,6 +54,10 @@
         <div class="filters-row">
           <input id="f-search" type="text" placeholder="Tìm theo tên, mã NV, email, SĐT..." />
           <select id="f-department" data-select="department" data-empty-label="Tất cả phòng ban"></select>
+          <button id="import-open-btn" class="btn btn-secondary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Nhập từ Excel
+          </button>
           <button id="create-add-btn" class="btn btn-primary">+ Tạo tài khoản</button>
         </div>
 
@@ -74,6 +79,7 @@
     </div>
   </div>
 
+  <!-- Modal: tạo 1 tài khoản -->
   <div id="create-modal" class="modal-overlay">
     <div class="modal-box" style="width:480px;">
       <h2>Tạo tài khoản người dùng</h2>
@@ -128,6 +134,7 @@
     </div>
   </div>
 
+  <!-- Modal: sửa người dùng -->
   <div id="edit-modal" class="modal-overlay">
     <div class="modal-box" style="width:480px;">
       <h2>Sửa thông tin người dùng</h2>
@@ -179,6 +186,51 @@
     </div>
   </div>
 
+  <!-- Modal: nhập hàng loạt từ Excel -->
+  <div id="import-modal" class="modal-overlay">
+    <div class="modal-box" style="width:min(820px, 94vw);">
+      <h2>Nhập người dùng hàng loạt từ Excel</h2>
+
+      <div class="callout" style="margin-bottom:14px;">
+        <strong>Cách làm:</strong>
+        <ol style="margin:6px 0 0; padding-left:18px;">
+          <li>Tải file mẫu bên dưới và điền thông tin (mỗi người 1 dòng, tối đa 500 dòng).</li>
+          <li>Chọn file đã điền, xem bảng kiểm tra, rồi bấm "Bắt đầu nhập".</li>
+          <li>Tải file kết quả để lấy mật khẩu từng người và gửi cho nhân viên.</li>
+        </ol>
+        <p style="margin:8px 0 0;">
+          <a href="templates/mau-nhap-nguoi-dung.xlsx" download>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Tải file Excel mẫu
+          </a>
+        </p>
+      </div>
+
+      <label class="field-label" style="margin-top:0;">Chọn file Excel (.xlsx) đã điền</label>
+      <input id="import-file" class="field-input" type="file" accept=".xlsx,.xls,.csv" />
+
+      <div class="table-wrap" style="margin-top:14px;">
+        <div class="table-scroll" style="max-height:300px; overflow-y:auto;">
+          <table>
+            <thead><tr><th>Dòng</th><th>Họ tên</th><th>Mã NV</th><th>Phòng ban / Chức danh</th><th>Trạng thái</th></tr></thead>
+            <tbody id="import-body">
+              <tr class="empty-row"><td colspan="5">Chọn file Excel để xem trước dữ liệu.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p id="import-summary" class="field-hint"></p>
+
+      <div class="modal-actions">
+        <button type="button" id="import-close-btn" class="btn btn-secondary">Đóng</button>
+        <button type="button" id="import-result-btn" class="btn btn-secondary hidden">Tải file kết quả (kèm mật khẩu)</button>
+        <button type="button" id="import-run-btn" class="btn btn-primary" disabled>Bắt đầu nhập</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thư viện đọc file Excel (SheetJS) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script type="module">
     import { requireAdmin } from './js/auth.js';
     import { initStudentsPage } from './js/students.js';
