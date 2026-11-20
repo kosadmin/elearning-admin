@@ -4,7 +4,10 @@ const ICON_EDIT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" s
 const ICON_LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
 const ICON_UNLOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`;
 
+const ICON_KEY = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`;
+
 let departments = [], positions = [];
+const userCache = new Map(); // id -> {full_name, employee_code} để dùng cho popup đặt lại mật khẩu
 
 /* ============================================================
    KHỞI TẠO TRANG
@@ -17,6 +20,7 @@ export async function initStudentsPage() {
   wireCreateModal();
   wireEditModal();
   wireImportModal();
+  wireResetModal();
   await loadStudents();
 }
 
@@ -76,6 +80,7 @@ async function loadStudents() {
   }
 
   data.forEach(row => {
+    userCache.set(row.id, { full_name: row.full_name, employee_code: row.employee_code });
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${escapeHtml(row.full_name || '—')}</td>
@@ -86,6 +91,7 @@ async function loadStudents() {
       <td>${row.is_active ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Đã khoá</span>'}</td>
       <td>
         <button class="icon-btn edit" data-edit="${row.id}" title="Sửa">${ICON_EDIT}</button>
+        <button class="icon-btn lock" data-reset="${row.id}" title="Đặt lại mật khẩu">${ICON_KEY}</button>
         <button class="icon-btn lock" data-toggle="${row.id}" data-active="${row.is_active}" title="${row.is_active ? 'Khoá tài khoản' : 'Mở khoá'}">${row.is_active ? ICON_LOCK : ICON_UNLOCK}</button>
       </td>
     `;
@@ -111,6 +117,9 @@ function wireFilters() {
 
     if (btn.dataset.edit) {
       openEditModal(btn.dataset.edit);
+    }
+    if (btn.dataset.reset) {
+      openResetModal(btn.dataset.reset);
     }
     if (btn.dataset.toggle) {
       const id = btn.dataset.toggle;
@@ -214,9 +223,13 @@ function wireEditModal() {
 async function openEditModal(id) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, employee_code, email, phone, role, is_active, department_id, position_id')
+    .select('id, full_name, employee_code, email, phone, role, is_active, department_id, position_id, departments(name), positions(name)')
     .eq('id', id).single();
   if (error) { alert(error.message); return; }
+
+  // Phòng ban/chức danh đã bị tắt không có trong dropdown -> thêm tạm để không bị trống khi sửa
+  ensureOption('e-department', data.department_id, data.departments?.name);
+  ensureOption('e-position', data.position_id, data.positions?.name);
 
   document.getElementById('e-id').value = data.id;
   document.getElementById('e-full-name').value = data.full_name || '';
@@ -230,6 +243,75 @@ async function openEditModal(id) {
   document.getElementById('edit-msg').textContent = '';
 
   document.getElementById('edit-modal').classList.add('open');
+}
+
+function ensureOption(selectId, value, name) {
+  const sel = document.getElementById(selectId);
+  sel.querySelectorAll('[data-temp]').forEach(o => o.remove());
+  if (!value || [...sel.options].some(o => o.value === value)) return;
+  const opt = document.createElement('option');
+  opt.value = value;
+  opt.textContent = `${name || value} (đã ngừng hoạt động)`;
+  opt.dataset.temp = '1';
+  sel.appendChild(opt);
+}
+
+/* ============================================================
+   ĐẶT LẠI MẬT KHẨU
+   ============================================================ */
+
+function wireResetModal() {
+  const modal = document.getElementById('reset-modal');
+  const msg = document.getElementById('reset-msg');
+  const pwInput = document.getElementById('reset-password');
+  const submitBtn = document.getElementById('reset-submit-btn');
+  const copyBtn = document.getElementById('reset-copy-btn');
+
+  document.getElementById('reset-cancel-btn').addEventListener('click', () => modal.classList.remove('open'));
+  document.getElementById('reset-gen-btn').addEventListener('click', () => { pwInput.value = generatePassword(); });
+
+  copyBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(pwInput.value); copyBtn.textContent = 'Đã sao chép'; }
+    catch (_) { pwInput.select(); document.execCommand('copy'); copyBtn.textContent = 'Đã sao chép'; }
+  });
+
+  document.getElementById('reset-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userId = document.getElementById('reset-user-id').value;
+    const newPassword = pwInput.value;
+    if (newPassword.length < 6) { msg.textContent = 'Mật khẩu phải có ít nhất 6 ký tự.'; return; }
+
+    submitBtn.disabled = true;
+    msg.textContent = 'Đang đặt lại mật khẩu...';
+
+    const { data, error } = await supabase.functions.invoke('admin-reset-password', {
+      body: { user_id: userId, new_password: newPassword },
+    });
+
+    let detail = error?.message || data?.error;
+    if (error?.context) {
+      try { detail = (await error.context.json()).error || detail; } catch (_) {}
+    }
+    if (detail) { msg.textContent = `Lỗi: ${detail}`; submitBtn.disabled = false; return; }
+
+    msg.textContent = 'Đã đặt lại mật khẩu thành công. Hãy gửi mật khẩu mới cho người dùng (cửa sổ này đóng là không xem lại được).';
+    copyBtn.classList.remove('hidden');
+    submitBtn.classList.add('hidden');
+  });
+}
+
+function openResetModal(userId) {
+  const u = userCache.get(userId) || {};
+  document.getElementById('reset-user-id').value = userId;
+  document.getElementById('reset-target').textContent = `Người dùng: ${u.full_name || '—'} (${u.employee_code || '—'})`;
+  document.getElementById('reset-password').value = generatePassword();
+  document.getElementById('reset-msg').textContent = '';
+  document.getElementById('reset-submit-btn').classList.remove('hidden');
+  document.getElementById('reset-submit-btn').disabled = false;
+  const copyBtn = document.getElementById('reset-copy-btn');
+  copyBtn.classList.add('hidden');
+  copyBtn.textContent = 'Sao chép mật khẩu';
+  document.getElementById('reset-modal').classList.add('open');
 }
 
 /* ============================================================
@@ -251,7 +333,10 @@ function wireImportModal() {
   const resultBtn = document.getElementById('import-result-btn');
   const closeBtn = document.getElementById('import-close-btn');
 
-  document.getElementById('import-open-btn').addEventListener('click', () => {
+  document.getElementById('import-template-btn').addEventListener('click', downloadImportTemplate);
+
+  document.getElementById('import-open-btn').addEventListener('click', async () => {
+    await loadLookups(); // lấy phòng ban/chức danh mới nhất để đối chiếu khi nhập
     importRows = [];
     fileInput.value = '';
     document.getElementById('import-body').innerHTML = `<tr class="empty-row"><td colspan="5">Chọn file Excel để xem trước dữ liệu.</td></tr>`;
@@ -275,6 +360,115 @@ function wireImportModal() {
 
   runBtn.addEventListener('click', runImport);
   resultBtn.addEventListener('click', downloadImportResult);
+}
+
+// Tạo file Excel mẫu từ phòng ban/chức danh HIỆN TẠI trong database (luôn đúng dữ liệu mới nhất)
+async function downloadImportTemplate() {
+  if (typeof ExcelJS === 'undefined') {
+    alert('Không tải được thư viện tạo Excel. Kiểm tra kết nối mạng rồi tải lại trang.');
+    return;
+  }
+  await loadLookups();
+
+  const depNames = departments.map(d => d.name);
+  const posNames = positions.map(p => p.name);
+  const roleNames = ['Học viên', 'Quản trị viên'];
+  const FONT = 'Arial';
+  const ORANGE = 'FFFF7A45', GREY = 'FF9CA3AF';
+
+  const wb = new ExcelJS.Workbook();
+  const guide = wb.addWorksheet('Hướng dẫn');
+  const ws = wb.addWorksheet(IMPORT_SHEET_NAME, { views: [{ state: 'frozen', ySplit: 1 }] });
+  const ref = wb.addWorksheet('Danh mục');
+
+  // --- Sheet nhập liệu ---
+  const cols = [
+    ['Họ tên', true, 28], ['Mã nhân sự', true, 16], ['Phòng ban', true, 26], ['Chức danh', true, 22],
+    ['Quyền', false, 16], ['Email', false, 28], ['SĐT', false, 16], ['Mật khẩu', false, 18],
+  ];
+  cols.forEach(([title, required, width], i) => {
+    const col = ws.getColumn(i + 1);
+    col.width = width;
+    const c = ws.getCell(1, i + 1);
+    c.value = title;
+    c.font = { name: FONT, bold: true, color: { argb: 'FFFFFFFF' } };
+    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: required ? ORANGE : GREY } };
+    c.alignment = { horizontal: 'center', vertical: 'middle' };
+  });
+  ws.getRow(1).height = 24;
+
+  const listRef = (letter, n) => `'Danh mục'!$${letter}$2:$${letter}$${Math.max(n, 1) + 1}`;
+  const dvBase = {
+    type: 'list', allowBlank: true, showErrorMessage: true, errorStyle: 'warning',
+    errorTitle: 'Giá trị lạ', error: 'Giá trị không có trong danh mục, hệ thống có thể từ chối dòng này.',
+  };
+  for (let r = 2; r <= IMPORT_MAX_ROWS + 1; r++) {
+    for (let c = 1; c <= 8; c++) {
+      const cell = ws.getCell(r, c);
+      cell.numFmt = '@'; // dạng Text: giữ số 0 đầu của SĐT/mã NV
+      cell.font = { name: FONT };
+    }
+    ws.getCell(r, 3).dataValidation = { ...dvBase, formulae: [listRef('A', depNames.length)] };
+    ws.getCell(r, 4).dataValidation = { ...dvBase, formulae: [listRef('B', posNames.length)] };
+    ws.getCell(r, 5).dataValidation = { ...dvBase, formulae: [listRef('C', roleNames.length)] };
+  }
+
+  // --- Sheet danh mục (lấy từ database) ---
+  [['Phòng ban', depNames], ['Chức danh', posNames], ['Quyền', roleNames]].forEach(([title, items], j) => {
+    ref.getColumn(j + 1).width = 30;
+    const h = ref.getCell(1, j + 1);
+    h.value = title;
+    h.font = { name: FONT, bold: true, color: { argb: 'FFFFFFFF' } };
+    h.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: ORANGE } };
+    items.forEach((v, i) => { ref.getCell(i + 2, j + 1).value = v; ref.getCell(i + 2, j + 1).font = { name: FONT }; });
+  });
+  ref.getCell('E1').value = `Danh sách lấy từ hệ thống lúc ${new Date().toLocaleString('vi-VN')}.`;
+  ref.getCell('E1').font = { name: FONT, italic: true, color: { argb: 'FF6B7280' } };
+
+  // --- Sheet hướng dẫn ---
+  guide.getColumn(1).width = 18;
+  guide.getColumn(2).width = 72;
+  const exDep = depNames[0] || 'Tên phòng ban';
+  const exPos = posNames[0] || 'Tên chức danh';
+  const lines = [
+    ['HƯỚNG DẪN NHẬP NGƯỜI DÙNG HÀNG LOẠT', null],
+    [null, null],
+    ['Bước 1', `Điền dữ liệu vào sheet "${IMPORT_SHEET_NAME}", mỗi người 1 dòng, bắt đầu từ dòng 2 (tối đa ${IMPORT_MAX_ROWS} dòng).`],
+    ['Bước 2', 'Lưu file (.xlsx) rồi vào Quản trị người dùng → "Nhập từ Excel" → chọn file.'],
+    ['Bước 3', 'Xem bảng kiểm tra, dòng lỗi sẽ báo rõ lý do. Bấm "Bắt đầu nhập".'],
+    ['Bước 4', 'Tải "file kết quả" để lấy mật khẩu từng người và gửi cho nhân viên.'],
+    [null, null],
+    ['CỘT', 'QUY TẮC'],
+    ['Họ tên *', 'Bắt buộc.'],
+    ['Mã nhân sự *', 'Bắt buộc, không trùng. Tự đổi sang chữ HOA. Dùng làm tên đăng nhập.'],
+    ['Phòng ban *', 'Bắt buộc, ghi ĐÚNG tên phòng ban (xem sheet "Danh mục").'],
+    ['Chức danh *', 'Bắt buộc, ghi ĐÚNG tên chức danh (xem sheet "Danh mục").'],
+    ['Quyền', 'Học viên hoặc Quản trị viên. Để trống = Học viên.'],
+    ['Email', 'Không bắt buộc. Nếu trống, tài khoản dùng mãnv@noemail.internal.'],
+    ['SĐT', 'Không bắt buộc, không trùng. Có thể đăng nhập bằng SĐT.'],
+    ['Mật khẩu', 'Từ 6 ký tự. Để trống = hệ thống tự sinh 10 ký tự ngẫu nhiên.'],
+    [null, null],
+    ['VÍ DỤ 1 DÒNG', null],
+    ['Họ tên', 'Nguyễn Văn A'], ['Mã nhân sự', 'AMS010'], ['Phòng ban', exDep], ['Chức danh', exPos],
+    ['Quyền', 'Học viên'], ['Email', '(để trống)'], ['SĐT', '0901234567'], ['Mật khẩu', '(để trống để tự sinh)'],
+  ];
+  lines.forEach(([a, b], i) => {
+    const ca = guide.getCell(i + 1, 1), cb = guide.getCell(i + 1, 2);
+    ca.value = a; cb.value = b;
+    ca.font = { name: FONT, bold: true }; cb.font = { name: FONT };
+    cb.alignment = { wrapText: true, vertical: 'top' }; ca.alignment = { vertical: 'top' };
+  });
+  guide.getCell('A1').font = { name: FONT, bold: true, size: 14, color: { argb: 'FFE85F2E' } };
+
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mau-nhap-nguoi-dung.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
 }
 
 async function readImportFile(file) {
