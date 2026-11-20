@@ -199,10 +199,11 @@
           <li>Tải file kết quả để lấy mật khẩu từng người và gửi cho nhân viên.</li>
         </ol>
         <p style="margin:8px 0 0;">
-          <a href="templates/mau-nhap-nguoi-dung.xlsx" download>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button type="button" id="import-template-btn" class="btn btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Tải file Excel mẫu
-          </a>
+          </button>
+          <span class="field-hint">File mẫu được tạo từ danh sách phòng ban/chức danh hiện tại của hệ thống.</span>
         </p>
       </div>
 
@@ -229,8 +230,32 @@
     </div>
   </div>
 
-  <!-- Thư viện đọc file Excel (SheetJS) -->
+  <!-- Modal: đặt lại mật khẩu -->
+  <div id="reset-modal" class="modal-overlay">
+    <div class="modal-box" style="width:420px;">
+      <h2>Đặt lại mật khẩu</h2>
+      <p class="field-hint" id="reset-target" style="margin-top:0;"></p>
+      <form id="reset-form">
+        <input type="hidden" id="reset-user-id" />
+        <label class="field-label">Mật khẩu mới *</label>
+        <div class="password-row">
+          <input id="reset-password" class="field-input" type="text" required minlength="6" />
+          <button type="button" id="reset-gen-btn" class="btn btn-secondary">Sinh ngẫu nhiên</button>
+        </div>
+        <p class="field-hint">Tối thiểu 6 ký tự. Người dùng nên đổi lại trong mục Cá nhân sau khi đăng nhập.</p>
+        <div class="modal-actions">
+          <button type="button" id="reset-cancel-btn" class="btn btn-secondary">Đóng</button>
+          <button type="button" id="reset-copy-btn" class="btn btn-secondary hidden">Sao chép mật khẩu</button>
+          <button type="submit" id="reset-submit-btn" class="btn btn-primary">Đặt lại mật khẩu</button>
+        </div>
+        <p id="reset-msg" class="field-hint"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Thư viện đọc file Excel (SheetJS) và tạo file mẫu (ExcelJS) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script type="module">
     import { requireAdmin } from './js/auth.js';
     import { initStudentsPage } from './js/students.js';
